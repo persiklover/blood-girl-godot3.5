@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Area2D
+
+signal activated()
+
+func _process(delta):
+	if Input.is_action_just_pressed(\"interact\") and Global.current_interactive_area == self:
+		emit_signal(\"activated\")
+
+func _on_InteractableArea_body_entered(body):
+	Global.current_interactive_area = self
+
+func _on_InteractableArea_body_exited(body):
+	Global.current_interactive_area = null
+"
+
+[node name="InteractiveArea" type="Area2D"]
+modulate = Color( 0.815686, 0.952941, 0.564706, 1 )
+collision_layer = 0
+collision_mask = 2
+script = SubResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[connection signal="body_entered" from="." to="." method="_on_InteractableArea_body_entered"]

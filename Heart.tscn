@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/heart.res" type="SpriteFrames" id=1]
+[ext_resource path="res://img/shadow.png" type="Texture" id=2]
+[ext_resource path="res://InteractiveArea.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Heart.gd" type="Script" id=4]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 2.00001
+height = 0.999985
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 11.0
+
+[node name="Heart" type="StaticBody2D"]
+script = ExtResource( 4 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -0.5, -1 )
+rotation = 1.57079
+shape = SubResource( 1 )
+disabled = true
+
+[node name="InteractiveArea" parent="." instance=ExtResource( 3 )]
+
+[node name="CollisionShape2D" parent="InteractiveArea" index="0"]
+position = Vector2( 0, -2 )
+shape = SubResource( 2 )
+
+[node name="Shadow" type="Sprite" parent="."]
+scale = Vector2( 0.818182, 1 )
+texture = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+frames = ExtResource( 1 )
+frame = 4
+playing = true
+offset = Vector2( 0, -5 )
+
+[connection signal="activated" from="InteractiveArea" to="." method="_on_InteractiveArea_activated"]
+
+[editable path="InteractiveArea"]

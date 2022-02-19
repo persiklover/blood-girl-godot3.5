@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/enemy.res" type="SpriteFrames" id=1]
+[ext_resource path="res://img/shadow.png" type="Texture" id=2]
+[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Enemy.gd" type="Script" id=4]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 3.00001
+height = 5.99999
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 7.0
+height = 8.0
+
+[node name="Enemy" type="KinematicBody2D"]
+collision_layer = 4
+script = ExtResource( 4 )
+
+[node name="Collider" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -1 )
+rotation = 1.57079
+shape = SubResource( 1 )
+
+[node name="Hurtbox" parent="." instance=ExtResource( 3 )]
+position = Vector2( 0, -1 )
+collision_layer = 8
+collision_mask = 4
+
+[node name="CollisionShape2D" parent="Hurtbox" index="0"]
+position = Vector2( 0, -10 )
+shape = SubResource( 2 )
+
+[node name="Shadow" type="Sprite" parent="."]
+position = Vector2( 0.595042, 0 )
+scale = Vector2( 1.28099, 1 )
+texture = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+frames = ExtResource( 1 )
+animation = "IDLE"
+frame = 6
+playing = true
+offset = Vector2( 0, -13 )
+
+[node name="BloodOrigin" type="Position2D" parent="."]
+position = Vector2( 0, -9 )
+
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
+[connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
+
+[editable path="Hurtbox"]

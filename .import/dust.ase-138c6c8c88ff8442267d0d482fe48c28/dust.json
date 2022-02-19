@@ -1,0 +1,22 @@
+{ "frames": [
+   {
+    "filename": "dust.ase",
+    "frame": { "x": 0, "y": 0, "w": 230, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 230, "h": 12 },
+    "sourceSize": { "w": 230, "h": 12 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.33-x64",
+  "image": "dust.png",
+  "format": "RGBA8888",
+  "size": { "w": 230, "h": 12 },
+  "scale": "1",
+  "frameTags": [
+  ]
+ }
+}

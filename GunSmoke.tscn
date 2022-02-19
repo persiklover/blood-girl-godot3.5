@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://img/gunsmoke.png" type="Texture" id=1]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id=2]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.12406, 0.857955 ), 1.51136, 1.51136, 0, 0, Vector2( 1, 0 ), -1.89585, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=3]
+curve = SubResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=4]
+flag_disable_z = true
+spread = 25.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 100.0
+initial_velocity_random = 1.0
+angular_velocity = 150.0
+angular_velocity_random = 1.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale_curve = SubResource( 3 )
+color = Color( 1, 1, 1, 0.447059 )
+anim_offset = 1.0
+anim_offset_random = 1.0
+
+[node name="GunSmoke" type="Particles2D"]
+material = SubResource( 1 )
+emitting = false
+lifetime = 0.3
+one_shot = true
+explosiveness = 0.75
+process_material = SubResource( 4 )
+texture = ExtResource( 1 )

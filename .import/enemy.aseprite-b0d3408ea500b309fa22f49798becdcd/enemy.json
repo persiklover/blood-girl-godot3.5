@@ -1,0 +1,144 @@
+{ "frames": [
+   {
+    "filename": "enemy 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   },
+   {
+    "filename": "enemy 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 300
+   },
+   {
+    "filename": "enemy 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   },
+   {
+    "filename": "enemy 3.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 400
+   },
+   {
+    "filename": "enemy 4.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 175
+   },
+   {
+    "filename": "enemy 5.aseprite",
+    "frame": { "x": 0, "y": 54, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 175
+   },
+   {
+    "filename": "enemy 6.aseprite",
+    "frame": { "x": 48, "y": 54, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 175
+   },
+   {
+    "filename": "enemy 7.aseprite",
+    "frame": { "x": 96, "y": 54, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 175
+   },
+   {
+    "filename": "enemy 8.aseprite",
+    "frame": { "x": 144, "y": 54, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 175
+   },
+   {
+    "filename": "enemy 9.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   },
+   {
+    "filename": "enemy 10.aseprite",
+    "frame": { "x": 0, "y": 108, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 300
+   },
+   {
+    "filename": "enemy 11.aseprite",
+    "frame": { "x": 48, "y": 108, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   },
+   {
+    "filename": "enemy 12.aseprite",
+    "frame": { "x": 96, "y": 108, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   },
+   {
+    "filename": "enemy 13.aseprite",
+    "frame": { "x": 144, "y": 108, "w": 48, "h": 54 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 54 },
+    "sourceSize": { "w": 48, "h": 54 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.33-x64",
+  "image": "enemy.png",
+  "format": "RGBA8888",
+  "size": { "w": 192, "h": 162 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "IDLE", "from": 0, "to": 3, "direction": "forward" },
+   { "name": "RUN", "from": 4, "to": 5, "direction": "forward" },
+   { "name": "ATTACK", "from": 6, "to": 7, "direction": "forward" },
+   { "name": "DEAD", "from": 8, "to": 8, "direction": "forward" },
+   { "name": "HIT", "from": 9, "to": 13, "direction": "forward" }
+  ]
+ }
+}
