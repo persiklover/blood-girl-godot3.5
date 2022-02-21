@@ -1,69 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://img/dust.png" type="Texture" id=1]
+[ext_resource path="res://aseprite-wizard-output/dust.res" type="SpriteFrames" id=1]
+[ext_resource path="res://Dust.gd" type="Script" id=2]
 
-[sub_resource type="Animation" id=1]
-resource_name = "Dust"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ true ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 0,
-"values": [ 0, 9 ]
-}
+[node name="Dust" type="AnimatedSprite"]
+frames = ExtResource( 1 )
+offset = Vector2( 4, -3 )
+script = ExtResource( 2 )
 
-[sub_resource type="Animation" id=2]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ false ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ 0 ]
-}
-
-[node name="DustNode" type="Node2D"]
-
-[node name="Sprite" type="Sprite" parent="."]
-visible = false
-texture = ExtResource( 1 )
-offset = Vector2( 6, -4 )
-hframes = 10
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Dust = SubResource( 1 )
-anims/RESET = SubResource( 2 )
+[connection signal="animation_finished" from="." to="." method="_on_Dust_animation_finished"]

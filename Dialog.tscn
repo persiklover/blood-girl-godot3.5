@@ -1,13 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Dialog.gd" type="Script" id=1]
-
-[sub_resource type="DynamicFontData" id=7]
-font_path = "res://fonts/prstart.ttf"
-
-[sub_resource type="DynamicFont" id=8]
-size = 8
-font_data = SubResource( 7 )
+[ext_resource path="res://Text.tscn" type="PackedScene" id=2]
 
 [node name="Dialog" type="Node2D"]
 z_index = 999
@@ -39,18 +33,8 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Text" type="RichTextLabel" parent="Control"]
-margin_left = -88.0
+[node name="Text" parent="Control" instance=ExtResource( 2 )]
+margin_left = -87.0
 margin_top = 5.0
-margin_right = 87.0
+margin_right = 88.0
 margin_bottom = 41.0
-custom_colors/default_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-custom_fonts/normal_font = SubResource( 8 )
-bbcode_enabled = true
-bbcode_text = "text"
-visible_characters = 0
-percent_visible = 0.0
-text = "text"
-__meta__ = {
-"_edit_use_anchors_": false
-}

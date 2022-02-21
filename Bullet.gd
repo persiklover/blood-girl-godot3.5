@@ -3,7 +3,7 @@ extends KinematicBody2D
 class_name Bullet
 
 var direction = Vector2.ZERO
-var speed = 0.735 # 1.025
+var speed = .785 # .9
 
 func _ready():
 	$AnimationPlayer.play("START")

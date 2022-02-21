@@ -1,7 +1,7 @@
 extends Node2D
 
-const WIDTH  = 256
-const HEIGHT = WIDTH / 1.65
+const WIDTH  = 256 * 1.75
+const HEIGHT = WIDTH / 1.5
 
 var is_movement_disabled = false
 var is_using_controller  = false
@@ -13,6 +13,10 @@ func _ready():
 	
 	var viewport : Viewport = get_viewport()
 	viewport.size = Vector2(WIDTH, HEIGHT)
+	
+	var grid = $Arena/TileMap
+	#grid.
+	
 
 func _process(delta):
 	var player = get_player()

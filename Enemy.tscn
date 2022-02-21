@@ -1,21 +1,48 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/enemy.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
 [ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Enemy.gd" type="Script" id=4]
+[ext_resource path="res://Text.tscn" type="PackedScene" id=5]
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 59.0339
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 3.00001
 height = 5.99999
 
 [sub_resource type="CapsuleShape2D" id=2]
-radius = 7.0
-height = 8.0
+radius = 4.0
+height = 10.0
 
 [node name="Enemy" type="KinematicBody2D"]
 collision_layer = 4
+collision_mask = 3
 script = ExtResource( 4 )
+
+[node name="Graphics" type="Node2D" parent="."]
+
+[node name="Vision" type="Area2D" parent="Graphics"]
+collision_layer = 0
+collision_mask = 66
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/Vision"]
+position = Vector2( -44, -9 )
+shape = SubResource( 3 )
+
+[node name="Shadow" type="Sprite" parent="Graphics"]
+position = Vector2( 0.595042, 0 )
+scale = Vector2( 1.28099, 1 )
+texture = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Graphics"]
+frames = ExtResource( 1 )
+animation = "IDLE"
+frame = 1
+playing = true
+offset = Vector2( 0, -13 )
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -1 )
@@ -25,28 +52,47 @@ shape = SubResource( 1 )
 [node name="Hurtbox" parent="." instance=ExtResource( 3 )]
 position = Vector2( 0, -1 )
 collision_layer = 8
-collision_mask = 4
+collision_mask = 36
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
-position = Vector2( 0, -10 )
+position = Vector2( 0, -12 )
 shape = SubResource( 2 )
-
-[node name="Shadow" type="Sprite" parent="."]
-position = Vector2( 0.595042, 0 )
-scale = Vector2( 1.28099, 1 )
-texture = ExtResource( 2 )
-
-[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-frames = ExtResource( 1 )
-animation = "IDLE"
-frame = 6
-playing = true
-offset = Vector2( 0, -13 )
 
 [node name="BloodOrigin" type="Position2D" parent="."]
 position = Vector2( 0, -9 )
 
+[node name="SeePlayerRayCast" type="RayCast2D" parent="."]
+visible = false
+enabled = true
+
+[node name="AtGunTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+visible = false
+modulate = Color( 0.415686, 0.0235294, 0.611765, 1 )
+cast_to = Vector2( 0, 7 )
+collision_mask = 0
+
+[node name="Line2D" type="Line2D" parent="."]
+visible = false
+width = 3.0
+begin_cap_mode = 1
+end_cap_mode = 1
+antialiased = true
+
+[node name="Text" parent="." instance=ExtResource( 5 )]
+visible = false
+margin_top = -38.0
+margin_bottom = -2.0
+
+[connection signal="area_entered" from="Graphics/Vision" to="." method="_on_Vision_area_entered"]
+[connection signal="area_exited" from="Graphics/Vision" to="." method="_on_Vision_area_exited"]
+[connection signal="animation_finished" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="frame_changed" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
-[connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
+[connection signal="area_exited" from="Hurtbox" to="." method="_on_Hurtbox_area_exited"]
+[connection signal="timeout" from="AtGunTimer" to="." method="_on_AtGunTimer_timeout"]
 
 [editable path="Hurtbox"]

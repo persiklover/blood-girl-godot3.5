@@ -2,14 +2,16 @@ extends KinematicBody2D
 
 class_name Player
 
-onready var sprite : AnimatedSprite = $Graphics/AnimatedSprite
+onready var sprite : AnimatedSprite = $AnimatedSprite
 onready var spriteOffset = sprite.offset
 onready var animation_player = $AnimationPlayer
 onready var graphics = $Graphics
 onready var torso_pivot = $Graphics/TorsoPivot
 onready var torso = $Graphics/TorsoPivot/Torso
 onready var gun = $Graphics/TorsoPivot/Revolver
+onready var gun_initial_offset = gun.position
 onready var bullet_origin = $Graphics/TorsoPivot/Revolver/BulletOrigin
+onready var left_arm = $Graphics/TorsoPivot/LeftArm
 
 onready var legs = $Graphics/Legs
 
@@ -20,9 +22,11 @@ enum State { IDLE, RUN, EAT, PUNCH }
 var currentState = State.IDLE
 var prevState = currentState
 
+var ejected_heart = false
 var facingRight = false
 var canChangeCurrentState = true
 var canSpawnDust = true
+
 var velocity : Vector2
 
 var health_manager = preload("res://Health.gd").new()
@@ -31,6 +35,8 @@ var dustScene = preload("res://Dust.tscn")
 
 var bullet_scene = preload("res://Bullet.tscn")
 var gun_smoke_scene = preload("res://GunSmoke.tscn")
+var hit_blood_scene = preload("res://HitBlood.tscn")
+var breadcrumb_scene = preload("res://Breadcrumb.tscn")
 
 func _ready():
 	health_manager.health = 1
@@ -65,8 +71,10 @@ func _handle_input():
 			Global.is_using_controller = false
 			velocity.y += 1
 	
-	if Input.is_action_just_pressed("ui_accept"):
+	if Input.is_action_just_pressed("melee_attack"):
+		$AnimatedSprite.visible = true
 		play_animation_once(State.keys()[State.PUNCH])
+		$Graphics.visible = false
 	
 	if Input.is_action_just_pressed("shoot"):
 		if not animation_player.is_playing():
@@ -94,10 +102,25 @@ func _handle_input():
 		yield(animation_player, "animation_finished")
 		_rotate_gun()
 		Global.get_crosshair().play("IDLE")
+	
+	if Input.is_action_just_pressed("check_health"):
+		ejected_heart = !ejected_heart
+		if ejected_heart:
+			animation_player.play("CHECK_HEALTH")
+		else:
+			animation_player.play_backwards("CHECK_HEALTH")
 
 func _process(delta):
 	_handle_input()
 	move_and_slide(velocity.normalized() * movementSpeed * 50)
+	
+	# Чем меньше HP, тем бледнее сердце
+	$Graphics/TorsoPivot/Heart.modulate = Color(
+		min(health_manager.health + 0.3, 1),
+		health_manager.health,
+		min(health_manager.health + 0.4, 1)
+	)
+	$Graphics/TorsoPivot/Heart.speed_scale = 1 / (health_manager.health + 0.3)
 	
 	if health_manager.health <= 0:
 		respawn()
@@ -118,7 +141,7 @@ func _process(delta):
 			if canSpawnDust:
 				spawn_dust()
 				canSpawnDust = false
-				yield(get_tree().create_timer(.75), "timeout")
+				yield(get_tree().create_timer(.35), "timeout")
 				canSpawnDust = true
 	
 	# Applying changes to sprite
@@ -135,25 +158,30 @@ func _process(delta):
 		
 		var cursor_angle = -1 * (-90 + int(gun.rotation_degrees) % 360)
 		
-		var gun_x_offsets = [-3, -1, 1, -6]
+		var gun_offsets = [
+			Vector2(-4, gun_initial_offset.y),
+			Vector2(-1, gun_initial_offset.y),
+			Vector2(-1, gun_initial_offset.y + 1),
+			Vector2(-6, gun_initial_offset.y + 1)
+		]
 		
 		if cursor_angle > 0:
 			if cursor_angle < 35:
 				torso.play("UP")
-				gun.position.x = gun_x_offsets[2]
+				gun.position = gun_offsets[2]
 			elif cursor_angle < 65:
 				torso.play("MIDDLE-UP")
-				gun.position.x = gun_x_offsets[1]
+				gun.position = gun_offsets[1]
 			else:
 				torso.play("MIDDLE")
-				gun.position.x = gun_x_offsets[0]
+				gun.position = gun_offsets[0]
 		else:
 			if cursor_angle > -270 + 35:
 				torso.play("MIDDLE-DOWN")
-				gun.position.x = gun_x_offsets[3]
+				gun.position = gun_offsets[3]
 			else:
 				torso.play("MIDDLE")
-				gun.position.x = gun_x_offsets[0]
+				gun.position = gun_offsets[0]
 
 func _rotate_gun():
 	var mouse_position = get_global_mouse_position()
@@ -161,20 +189,10 @@ func _rotate_gun():
 	gun.rotation_degrees += 180
 
 func spawn_dust():
-	return
 	var dust = dustScene.instance()
 	dust.global_position = self.global_position
 	dust.show_behind_parent = true
-	var sprite = dust.get_node("Sprite")
-	sprite.flip_h = facingRight
-	if facingRight:
-		sprite.offset.x = -sprite.offset.x
 	get_parent().call_deferred("add_child", dust)
-	
-	var animationPlayer = dust.get_node("AnimationPlayer")
-	animationPlayer.play("Dust")
-	yield( animationPlayer, "animation_finished" )
-	dust.queue_free()
 
 func play_animation_once(anim: String):
 	currentState = State[anim]
@@ -183,8 +201,16 @@ func play_animation_once(anim: String):
 	yield(sprite, "animation_finished")
 	canChangeCurrentState = true
 
-func take_damage(damage: float):
+func take_damage(damage: float, initiator: Node2D):
 	health_manager.health -= damage
+	
+	var blood = hit_blood_scene.instance() as CPUParticles2D
+	blood.look_at((initiator.global_position - global_position).normalized())
+	blood.rotation_degrees += 180
+	blood.global_position = $BloodOrigin.global_position
+	blood.emitting = true
+	blood.show_behind_parent = true
+	get_parent().call_deferred("add_child", blood)
 
 func respawn():
 	var respawn : Position2D = owner.find_node("Respawn")
@@ -253,9 +279,19 @@ func _on_AnimatedSprite_animation_finished():
 			eating = false
 			Global.is_movement_disabled = false
 			emit_signal("finished_eating")
+		State.PUNCH:
+			$AnimatedSprite.visible = false
+			$Graphics.visible = true
 
 func _on_Timer_timeout():
 	health_manager.health -= health_drop
 	
 	var mouse_position = get_global_mouse_position() / 4;
 	#print(global_position, " ", mouse_position)
+
+
+func _on_BreadcrumbTimer_timeout():
+	var breadcrumb = breadcrumb_scene.instance()
+	breadcrumb.global_position = global_position
+	breadcrumb.show_behind_parent = true
+	get_parent().call_deferred("add_child", breadcrumb)
