@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Blood.gd" type="Script" id=1]
 [ext_resource path="res://img/gunsmoke.png" type="Texture" id=2]
@@ -9,6 +9,9 @@ particles_anim_h_frames = 3
 particles_anim_v_frames = 1
 particles_anim_loop = false
 
+[sub_resource type="Curve" id=4]
+_data = [ Vector2( 0.42803, 0.241379 ), 0.0, 1.98737, 0, 0, Vector2( 1, 1 ), 1.17717, 0.0, 0, 0 ]
+
 [sub_resource type="CircleShape2D" id=2]
 radius = 13.0
 
@@ -18,17 +21,22 @@ height = 16.0
 
 [node name="Blood" type="CPUParticles2D"]
 material = SubResource( 1 )
-amount = 32
+amount = 35
 lifetime = 0.25
 explosiveness = 1.0
 texture = ExtResource( 2 )
-direction = Vector2( 1, -0.219 )
-spread = 26.39
-gravity = Vector2( 0, 0 )
-initial_velocity = 148.29
-initial_velocity_random = 0.8
-scale_amount = 0.95
+emission_shape = 1
+emission_sphere_radius = 2.3
+direction = Vector2( 1, -0.015 )
+spread = 31.68
+gravity = Vector2( 50, 0 )
+initial_velocity = 126.24
+initial_velocity_random = 0.83
+angular_velocity = 140.0
+angular_velocity_random = 0.61
+scale_amount = 1.25
 scale_amount_random = 0.61
+scale_amount_curve = SubResource( 4 )
 color = Color( 0.788235, 0.0980392, 0.0980392, 1 )
 anim_speed_random = 1.0
 anim_offset = 1.0
@@ -42,14 +50,9 @@ autostart = true
 
 [node name="Area2D" type="Area2D" parent="."]
 show_behind_parent = true
+position = Vector2( 0, 2 )
 collision_layer = 0
 collision_mask = 128
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
-visible = false
-build_mode = 1
-polygon = PoolVector2Array( -2, -6, 30, -16, 32, 0, 29, 13, -2, 5 )
-disabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2( 19, -2 )

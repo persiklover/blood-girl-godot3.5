@@ -1,0 +1,206 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://Teleport.gd" type="Script" id=1]
+[ext_resource path="res://img/plant.png" type="Texture" id=2]
+[ext_resource path="res://img/chair.png" type="Texture" id=3]
+[ext_resource path="res://img/fridge.png" type="Texture" id=4]
+[ext_resource path="res://img/door.png" type="Texture" id=5]
+[ext_resource path="res://shaders/Transparent.shader" type="Shader" id=6]
+[ext_resource path="res://TheEntity.tscn" type="PackedScene" id=7]
+
+[sub_resource type="Shader" id=8]
+code = "shader_type canvas_item;
+render_mode unshaded;
+
+uniform int iterations = 20;
+uniform float formuparam = 1.00;
+
+uniform int volsteps = 20;
+uniform float stepsize = 0.1;
+
+uniform float zoom = 0.800;
+uniform float tile = 0.5;
+uniform float speed = 0.001;
+
+uniform float brightness = 0.002;
+uniform float darkmatter = 0.100;
+uniform float distfading = 0.650;
+uniform float saturation = 0.750;
+
+uniform vec2 iResolution = vec2(192, 192);
+uniform vec2 iMouse = vec2(0,0);
+
+float SCurve (float value) {
+
+    if (value < 0.5)
+    {
+        return value * value * value * value * value * 16.0; 
+    }
+    
+    value -= 1.0;
+    
+    return value * value * value * value * value * 16.0 + 1.0;
+}
+
+void fragment()
+{
+	//get coords and direction
+	vec2 uv=FRAGCOORD.xy/iResolution.xy-.5;
+	uv.y*=iResolution.y/iResolution.x;
+	vec3 dir=vec3(uv*zoom,1.);
+	float time=TIME*speed+.25;
+
+	//mouse rotation
+	float a1=0.5+iMouse.x/iResolution.x*2.;
+	float a2=0.8+iMouse.y/iResolution.y*2.;
+	mat2 rot1=mat2(vec2(cos(a1),sin(a1)),vec2(-sin(a1),cos(a1)));
+	mat2 rot2=mat2(vec2(cos(a2),sin(a2)),vec2(-sin(a2),cos(a2)));
+	dir.xy*=rot1;
+	dir.xz*=rot2;
+	vec3 from=vec3(1.0,0.5,0.5);
+	from-=vec3(0.0,time,0.0);
+	from.xz*=rot1;
+	from.xy*=rot2;
+	
+	//volumetric rendering
+	float s=0.1,fade=1.;
+	vec3 v=vec3(0.);
+	for (int r=0; r<volsteps; r++) {
+		vec3 p=from+s*dir*0.5;
+		p = abs(vec3(tile)-mod(p,vec3(tile*2.))); // tiling fold
+		float pa,a=pa=0.;
+		for (int i=0; i<iterations; i++) { 
+			p=abs(p)/dot(p,p)-formuparam; // the magic formula
+			a+=abs(length(p)-pa); // absolute sum of average change
+			pa=length(p);
+		}
+		float dm=max(0.,darkmatter-a*a*.001); //dark matter
+		a = pow(a, 2.3); // add contrast
+		if (r>6) fade*=1.-dm; // dark matter, don't render near
+		//v+=vec3(dm,dm*.5,0.);
+		v+=fade;
+		v+=vec3(s,s*s,s*s*s*s)*a*brightness*fade; // coloring based on distance
+		fade*=distfading; // distance fading
+		s+=stepsize;
+	}
+    
+	v=mix(vec3(length(v)),v,saturation); //color adjust
+    
+    vec4 C = vec4(v*.01,1.);
+    
+     	C.r = pow(C.r, 0.35); 
+ 	 	C.g = pow(C.g, 0.36); 
+ 	 	C.b = pow(C.b, 0.38); 
+ 	
+    vec4 L = C;   	
+    
+    COLOR.r = mix(L.r, SCurve(C.r), 0.7); 
+    COLOR.g = mix(L.g, SCurve(C.g), 1.0); 
+    COLOR.b = mix(L.b, SCurve(C.b), 0.2);     	
+	
+}"
+
+[sub_resource type="ShaderMaterial" id=9]
+shader = SubResource( 8 )
+shader_param/iterations = 20
+shader_param/formuparam = 1.0
+shader_param/volsteps = 20
+shader_param/stepsize = 0.1
+shader_param/zoom = 0.8
+shader_param/tile = 0.5
+shader_param/speed = 0.001
+shader_param/brightness = 0.002
+shader_param/darkmatter = 0.1
+shader_param/distfading = 0.65
+shader_param/saturation = 0.75
+shader_param/iResolution = Vector2( 192, 192 )
+shader_param/iMouse = Vector2( 0, 0 )
+
+[sub_resource type="RectangleShape2D" id=10]
+extents = Vector2( 245.5, 11.5 )
+
+[sub_resource type="RectangleShape2D" id=11]
+extents = Vector2( 15, 190 )
+
+[sub_resource type="RectangleShape2D" id=12]
+extents = Vector2( 7.5, 7.5 )
+
+[sub_resource type="ShaderMaterial" id=13]
+shader = ExtResource( 6 )
+
+[sub_resource type="RectangleShape2D" id=14]
+extents = Vector2( 11, 3.5 )
+
+[node name="TheVoid" type="Node2D"]
+
+[node name="Arena" type="StaticBody2D" parent="."]
+position = Vector2( 0, -28 )
+
+[node name="TPDestination" type="Position2D" parent="Arena"]
+position = Vector2( 0, 2 )
+
+[node name="Fridge" type="Sprite" parent="Arena"]
+visible = false
+position = Vector2( 12, -875 )
+texture = ExtResource( 4 )
+
+[node name="Void" type="StaticBody2D" parent="."]
+position = Vector2( -205, 17 )
+
+[node name="Background" type="ColorRect" parent="Void"]
+material = SubResource( 9 )
+margin_left = -141.0
+margin_top = -426.0
+margin_right = 559.0
+margin_bottom = 51.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Void"]
+position = Vector2( 205, -17 )
+shape = SubResource( 10 )
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="Void"]
+position = Vector2( 206, -353 )
+shape = SubResource( 10 )
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Void"]
+position = Vector2( 422, -182 )
+shape = SubResource( 11 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Void"]
+position = Vector2( -10, -184 )
+shape = SubResource( 11 )
+
+[node name="TheEntity" parent="." instance=ExtResource( 7 )]
+position = Vector2( -0.5, -145.5 )
+
+[node name="Chair2" type="Sprite" parent="."]
+position = Vector2( 28.5, -145.5 )
+texture = ExtResource( 3 )
+offset = Vector2( 1, -1.594 )
+
+[node name="Plant" type="Sprite" parent="Chair2"]
+position = Vector2( 1, -5 )
+texture = ExtResource( 2 )
+offset = Vector2( 1.08, -11.716 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Chair2/Plant"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Chair2/Plant/StaticBody2D"]
+position = Vector2( -0.5, 2.5 )
+shape = SubResource( 12 )
+
+[node name="Door2" type="Sprite" parent="."]
+material = SubResource( 13 )
+position = Vector2( 0, -32 )
+texture = ExtResource( 5 )
+
+[node name="Teleport" type="Position2D" parent="Door2"]
+script = ExtResource( 1 )
+
+[node name="Trigger" type="Area2D" parent="Door2/Teleport"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door2/Teleport/Trigger"]
+position = Vector2( 0, 18.5 )
+shape = SubResource( 14 )
+
+[connection signal="area_entered" from="Door2/Teleport/Trigger" to="Door2/Teleport" method="_on_Area2D_area_entered"]

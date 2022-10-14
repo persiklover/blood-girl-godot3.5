@@ -5,11 +5,13 @@ var stopped = false
 var player_stands_on = false
 
 var start_heal_time = 0
-var heal_interval = 50
-var heal_power = .005
+var heal_interval = 500
+var heal_power = .0275
 
 var freshness = 1
-var staling_speed_sec = 10
+var staling_speed_sec = 15
+
+var heal_particle_scene = preload("res://HealParticle.tscn")
 
 func _ready():
 	player = Global.get_player()
@@ -26,6 +28,8 @@ func _ready():
 
 func _on_Timer_timeout():
 	stopped = true
+	scale.x += .15
+	scale.y += .15
 	set_process_internal(false)
 
 func _process(delta):
@@ -36,6 +40,12 @@ func _process(delta):
 	if player_stands_on and player.ejected_heart and elapsed > heal_interval:
 		start_heal_time = OS.get_ticks_msec()
 		player.health_manager.health += heal_power * freshness
+		
+		var heal_particle = heal_particle_scene.instance()
+		heal_particle.global_position = player.global_position
+		heal_particle.emitting = true
+		# heal_particle.show_behind_parent = true
+		get_parent().call_deferred("add_child", heal_particle)
 
 
 # We assume that the only thing that can get in is player

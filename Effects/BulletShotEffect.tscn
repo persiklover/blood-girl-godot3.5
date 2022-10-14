@@ -1,0 +1,43 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://img/bullet-shot-effect.png" type="Texture" id=1]
+[ext_resource path="res://Effects/BulletShotEffect.gd" type="Script" id=2]
+
+[sub_resource type="Curve" id=2]
+min_value = -360.0
+max_value = 360.0
+_data = [ Vector2( 0, -262.241 ), 0.0, 0.0, 0, 0, Vector2( 1, -6.20691 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=3]
+curve = SubResource( 2 )
+
+[sub_resource type="Gradient" id=4]
+offsets = PoolRealArray( 0.451163, 0.623256 )
+colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=5]
+gradient = SubResource( 4 )
+
+[sub_resource type="ParticlesMaterial" id=1]
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+spread = 15.27
+gravity = Vector3( 0, 98, 0 )
+initial_velocity = 73.5
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+angle = 180.0
+angle_curve = SubResource( 3 )
+scale = 0.65
+color_ramp = SubResource( 5 )
+
+[node name="BulletShotEffect" type="Particles2D"]
+modulate = Color( 0.823529, 0.823529, 0.823529, 1 )
+position = Vector2( 0, -2 )
+amount = 1
+lifetime = 3.0
+speed_scale = 1.6
+fract_delta = false
+process_material = SubResource( 1 )
+texture = ExtResource( 1 )
+script = ExtResource( 2 )

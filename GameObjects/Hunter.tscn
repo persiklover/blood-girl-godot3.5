@@ -1,0 +1,294 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/hunter.res" type="SpriteFrames" id=1]
+[ext_resource path="res://img/rifle.png" type="Texture" id=2]
+[ext_resource path="res://GameObjects/Hunter.gd" type="Script" id=3]
+[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=4]
+[ext_resource path="res://GameObjects/AlarmNotifier.tscn" type="PackedScene" id=5]
+[ext_resource path="res://GameObjects/RayRect.tscn" type="PackedScene" id=6]
+[ext_resource path="res://GameObjects/LocalGroupArea.tscn" type="PackedScene" id=7]
+[ext_resource path="res://GameObjects/ReinforcementsArea.tscn" type="PackedScene" id=8]
+[ext_resource path="res://GameObjects/Steer/Steer.tscn" type="PackedScene" id=9]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 3.0
+height = 5.99999
+
+[sub_resource type="RectangleShape2D" id=7]
+resource_local_to_scene = true
+extents = Vector2( 118.5, 12.1875 )
+
+[sub_resource type="CapsuleShape2D" id=4]
+radius = 5.0
+height = 10.0
+
+[sub_resource type="CircleShape2D" id=6]
+radius = 110.005
+
+[sub_resource type="Animation" id=5]
+resource_name = "DIE"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics/AnimatedSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -7, -1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Graphics/AnimatedSprite:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 89.9999 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Graphics/Rifle:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -4 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Graphics/Rifle:rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 89.9999 ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics/Rifle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -2, -7 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Graphics/Rifle:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Graphics/Rifle:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Graphics/AnimatedSprite:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Graphics/AnimatedSprite:rotation_degrees")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "SHOOT"
+length = 1.25
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics/Rifle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.35, 0.4, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ Vector2( -3, -8 ), Vector2( -2.38419e-07, -8 ), Vector2( -3, -8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Graphics/Rifle:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/keys = {
+"times": PoolRealArray( 0.35, 0.4, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 0.0, 30.0, 0.0 ]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.35, 0.6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"values": [ {
+"args": [  ],
+"method": "recoil"
+}, {
+"args": [  ],
+"method": "_rotate_gun"
+} ]
+}
+
+[node name="Hunter" type="KinematicBody2D" groups=["Enemy", "Hunter"]]
+collision_layer = 4
+collision_mask = 519
+script = ExtResource( 3 )
+
+[node name="Collider" type="CollisionShape2D" parent="."]
+position = Vector2( 1, 0 )
+rotation = 1.57079
+shape = SubResource( 1 )
+
+[node name="Graphics" type="Node2D" parent="."]
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Graphics"]
+frames = ExtResource( 1 )
+offset = Vector2( 1, -15 )
+
+[node name="Rifle" type="Sprite" parent="Graphics"]
+position = Vector2( -2, -7 )
+texture = ExtResource( 2 )
+offset = Vector2( -5, 0 )
+
+[node name="ShootRayRect" type="Area2D" parent="Graphics/Rifle"]
+position = Vector2( 0, -3 )
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/Rifle/ShootRayRect"]
+position = Vector2( -118, 0 )
+shape = SubResource( 7 )
+
+[node name="BulletOrigin" type="Position2D" parent="Graphics/Rifle"]
+position = Vector2( -16, -3 )
+
+[node name="Hurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 4 )]
+collision_layer = 8
+collision_mask = 548
+
+[node name="CollisionShape2D" parent="Hurtbox" index="0"]
+position = Vector2( 1, -15 )
+shape = SubResource( 4 )
+
+[node name="BloodOrigin" type="Position2D" parent="."]
+position = Vector2( 0, -9 )
+
+[node name="Vision" type="Area2D" parent="."]
+visible = false
+modulate = Color( 1, 1, 1, 0.333333 )
+collision_layer = 0
+collision_mask = 66
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
+position = Vector2( -99, -9.00011 )
+shape = SubResource( 6 )
+
+[node name="RayRect" parent="." instance=ExtResource( 6 )]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/DIE = SubResource( 5 )
+anims/RESET = SubResource( 2 )
+anims/SHOOT = SubResource( 3 )
+
+[node name="Steer" parent="." instance=ExtResource( 9 )]
+visible = false
+show_behind_parent = true
+
+[node name="RayCast" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( -15, 0 )
+
+[node name="PathLine" type="Line2D" parent="."]
+width = 2.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="AlarmNotifier" parent="." instance=ExtResource( 5 )]
+
+[node name="HealthBar" type="Node2D" parent="."]
+visible = false
+position = Vector2( 1, -33 )
+
+[node name="Bg" type="ColorRect" parent="HealthBar"]
+margin_left = -8.0
+margin_top = -1.0
+margin_right = 8.0
+margin_bottom = 1.0
+color = Color( 0, 0, 0, 0.623529 )
+
+[node name="ColorRect" type="ColorRect" parent="HealthBar"]
+margin_left = -8.0
+margin_top = -1.0
+margin_right = 8.0
+margin_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 1 )
+color = Color( 0.431373, 1, 0, 1 )
+
+[node name="LocalGroupArea" parent="." instance=ExtResource( 7 )]
+visible = false
+
+[node name="ReinforcementsArea" parent="." instance=ExtResource( 8 )]
+visible = false
+
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
+[connection signal="body_entered" from="Hurtbox" to="." method="_on_Hurtbox_body_entered"]
+[connection signal="area_entered" from="Vision" to="." method="_on_Vision_area_entered"]
+[connection signal="area_exited" from="Vision" to="." method="_on_Vision_area_exited"]
+
+[editable path="Hurtbox"]

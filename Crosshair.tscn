@@ -101,7 +101,6 @@ tracks/0/keys = {
 }
 
 [node name="Crosshair" type="Sprite"]
-rotation = 1.5708
 z_index = 10
 texture = ExtResource( 1 )
 script = ExtResource( 2 )

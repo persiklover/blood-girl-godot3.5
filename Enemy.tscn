@@ -1,98 +1,511 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=30 format=2]
 
-[ext_resource path="res://aseprite-wizard-output/enemy.res" type="SpriteFrames" id=1]
+[ext_resource path="res://aseprite-wizard-output/enemy01.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
 [ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Enemy.gd" type="Script" id=4]
 [ext_resource path="res://Text.tscn" type="PackedScene" id=5]
-
-[sub_resource type="CircleShape2D" id=3]
-radius = 59.0339
+[ext_resource path="res://SoftCollision.tscn" type="PackedScene" id=6]
+[ext_resource path="res://aseprite-wizard-output/stun-effect.res" type="SpriteFrames" id=7]
+[ext_resource path="res://img/question-mark.png" type="Texture" id=8]
+[ext_resource path="res://GameObjects/Steer/Steer.tscn" type="PackedScene" id=9]
+[ext_resource path="res://GameObjects/RayRect.tscn" type="PackedScene" id=10]
+[ext_resource path="res://GameObjects/LocalGroupArea.tscn" type="PackedScene" id=11]
+[ext_resource path="res://GameObjects/ReinforcementsArea.tscn" type="PackedScene" id=12]
+[ext_resource path="res://img/exclamation-mark.png" type="Texture" id=13]
+[ext_resource path="res://shaders/White.shader" type="Shader" id=14]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 3.00001
-height = 5.99999
+height = 3.99996
+
+[sub_resource type="CircleShape2D" id=6]
+resource_local_to_scene = true
+radius = 0.01
+
+[sub_resource type="CircleShape2D" id=11]
+radius = 97.0052
+
+[sub_resource type="CircleShape2D" id=8]
+radius = 11.0
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 86.0058
 
 [sub_resource type="CapsuleShape2D" id=2]
-radius = 4.0
-height = 10.0
+radius = 3.0
+height = 2.0
 
-[node name="Enemy" type="KinematicBody2D"]
+[sub_resource type="CapsuleShape2D" id=10]
+radius = 5.00002
+height = 6.0
+
+[sub_resource type="RectangleShape2D" id=16]
+resource_local_to_scene = true
+extents = Vector2( 33.5, 10 )
+
+[sub_resource type="Animation" id=9]
+resource_name = "DIE"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics/AnimatedSprite:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Graphics/AnimatedSprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "IDLE" ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Graphics/AnimatedSprite:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Graphics/AnimatedSprite:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -8, -4 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Graphics/AnimatedSprite:rotation_degrees")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 90.0 ]
+}
+
+[sub_resource type="ShaderMaterial" id=17]
+shader = ExtResource( 14 )
+
+[sub_resource type="Animation" id=4]
+resource_name = "GOT_DAMAGE"
+length = 0.4
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics/AnimatedSprite:material")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.07 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ SubResource( 17 ), null ]
+}
+
+[sub_resource type="Animation" id=5]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Graphics:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("ReactArea/CollisionShape2D:shape:radius")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.01 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Graphics:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Graphics/AnimatedSprite:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Graphics/AnimatedSprite:animation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ "IDLE" ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Graphics/AnimatedSprite:frame")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Graphics/AnimatedSprite:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Graphics/AnimatedSprite:rotation_degrees")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+tracks/8/type = "value"
+tracks/8/path = NodePath("Question-mark:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/9/type = "value"
+tracks/9/path = NodePath(".:material")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ null ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Graphics/AnimatedSprite:material")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ null ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "SPRED_ALARM_AREA"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/path = NodePath("ReactArea/CollisionShape2D:shape:radius")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 0.01, 278.007, 0.01 ]
+}
+
+[sub_resource type="Animation" id=12]
+resource_name = "QUESTION"
+tracks/0/type = "value"
+tracks/0/path = NodePath("../Question-mark:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.8, 0.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ true, true, false ]
+}
+
+[sub_resource type="Animation" id=13]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("../Question-mark:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+
+[node name="Enemy" type="KinematicBody2D" groups=["Enemy"]]
 collision_layer = 4
-collision_mask = 3
+collision_mask = 519
 script = ExtResource( 4 )
-
-[node name="Graphics" type="Node2D" parent="."]
-
-[node name="Vision" type="Area2D" parent="Graphics"]
-collision_layer = 0
-collision_mask = 66
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/Vision"]
-position = Vector2( -44, -9 )
-shape = SubResource( 3 )
-
-[node name="Shadow" type="Sprite" parent="Graphics"]
-position = Vector2( 0.595042, 0 )
-scale = Vector2( 1.28099, 1 )
-texture = ExtResource( 2 )
-
-[node name="AnimatedSprite" type="AnimatedSprite" parent="Graphics"]
-frames = ExtResource( 1 )
-animation = "IDLE"
-frame = 1
-playing = true
-offset = Vector2( 0, -13 )
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -1 )
 rotation = 1.57079
 shape = SubResource( 1 )
 
-[node name="Hurtbox" parent="." instance=ExtResource( 3 )]
+[node name="ReactArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ReactArea"]
+shape = SubResource( 6 )
+
+[node name="Graphics" type="Node2D" parent="."]
+
+[node name="Shadow" type="Sprite" parent="Graphics"]
+position = Vector2( 1, 0 )
+scale = Vector2( 1.09091, 1 )
+texture = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Graphics"]
+frames = ExtResource( 1 )
+animation = "IDLE"
+playing = true
+offset = Vector2( -4, -14 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
+
+[node name="HearArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 2048
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HearArea"]
+modulate = Color( 1, 0.647059, 0.788235, 0.384314 )
+shape = SubResource( 11 )
+
+[node name="SoftCollision" parent="." instance=ExtResource( 6 )]
+visible = false
+
+[node name="CollisionShape2D" parent="SoftCollision" index="0"]
+position = Vector2( 0, -1 )
+shape = SubResource( 8 )
+
+[node name="LocalGroupArea" parent="." instance=ExtResource( 11 )]
+visible = false
+
+[node name="ReinforcementsArea" parent="." instance=ExtResource( 12 )]
+visible = false
+
+[node name="Vision" type="Area2D" parent="."]
+modulate = Color( 1, 1, 1, 0.4 )
+rotation = 43.9823
+collision_layer = 0
+collision_mask = 1026
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
+position = Vector2( -76, -8.00009 )
+shape = SubResource( 3 )
+
+[node name="Hurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 3 )]
+visible = false
 position = Vector2( 0, -1 )
 collision_layer = 8
-collision_mask = 36
+collision_mask = 548
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
-position = Vector2( 0, -12 )
+position = Vector2( 0, -7 )
 shape = SubResource( 2 )
+
+[node name="HeadHurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 3 )]
+visible = false
+collision_layer = 8
+collision_mask = 548
+
+[node name="CollisionShape2D" parent="HeadHurtbox" index="0"]
+position = Vector2( 0, -17 )
+rotation = 1.57079
+shape = SubResource( 10 )
+
+[node name="StunEffect" type="AnimatedSprite" parent="."]
+visible = false
+position = Vector2( 0, -27 )
+frames = ExtResource( 7 )
+playing = true
 
 [node name="BloodOrigin" type="Position2D" parent="."]
 position = Vector2( 0, -9 )
 
-[node name="SeePlayerRayCast" type="RayCast2D" parent="."]
+[node name="HeadBloodOrigin" type="Position2D" parent="."]
+position = Vector2( 0, -17 )
+
+[node name="RayRect" parent="." instance=ExtResource( 10 )]
 visible = false
-enabled = true
+
+[node name="CollisionShape2D" parent="RayRect" index="0"]
+position = Vector2( -33.5, 0 )
+shape = SubResource( 16 )
 
 [node name="AtGunTimer" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
 
-[node name="RayCast2D" type="RayCast2D" parent="."]
+[node name="Direction" type="RayCast2D" parent="."]
 visible = false
 modulate = Color( 0.415686, 0.0235294, 0.611765, 1 )
+rotation = 6.28319
+enabled = true
+exclude_parent = false
 cast_to = Vector2( 0, 7 )
 collision_mask = 0
 
-[node name="Line2D" type="Line2D" parent="."]
-visible = false
-width = 3.0
-begin_cap_mode = 1
-end_cap_mode = 1
-antialiased = true
+[node name="PathLine2D" type="Line2D" parent="."]
+width = 2.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="Text" parent="." instance=ExtResource( 5 )]
 visible = false
 margin_top = -38.0
 margin_bottom = -2.0
 
-[connection signal="area_entered" from="Graphics/Vision" to="." method="_on_Vision_area_entered"]
-[connection signal="area_exited" from="Graphics/Vision" to="." method="_on_Vision_area_exited"]
+[node name="Question-mark" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -33 )
+texture = ExtResource( 8 )
+
+[node name="Exclamation-mark" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -33 )
+texture = ExtResource( 13 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/DIE = SubResource( 9 )
+anims/GOT_DAMAGE = SubResource( 4 )
+anims/RESET = SubResource( 5 )
+anims/SPRED_ALARM_AREA = SubResource( 7 )
+
+[node name="BgAnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../AnimationPlayer")
+anims/QUESTION = SubResource( 12 )
+anims/RESET = SubResource( 13 )
+
+[node name="HealthBar" type="Node2D" parent="."]
+visible = false
+position = Vector2( 0, -33 )
+
+[node name="Bg" type="ColorRect" parent="HealthBar"]
+margin_left = -8.0
+margin_top = -1.0
+margin_right = 8.0
+margin_bottom = 1.0
+color = Color( 0, 0, 0, 0.623529 )
+
+[node name="ColorRect" type="ColorRect" parent="HealthBar"]
+margin_left = -8.0
+margin_top = -1.0
+margin_right = 8.0
+margin_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 1 )
+color = Color( 0.431373, 1, 0, 1 )
+
+[node name="ZigzagAllowedTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="ZigzagTimoutTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Steer" parent="." instance=ExtResource( 9 )]
+visible = false
+show_behind_parent = true
+
+[node name="RayCast" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( -15, 0 )
+
+[connection signal="body_entered" from="ReactArea" to="." method="_on_ReactArea_body_entered"]
 [connection signal="animation_finished" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
 [connection signal="frame_changed" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
+[connection signal="area_entered" from="HearArea" to="." method="_on_HearArea_area_entered"]
+[connection signal="area_entered" from="Vision" to="." method="_on_Vision_area_entered"]
+[connection signal="area_exited" from="Vision" to="." method="_on_Vision_area_exited"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_exited" from="Hurtbox" to="." method="_on_Hurtbox_area_exited"]
-[connection signal="timeout" from="AtGunTimer" to="." method="_on_AtGunTimer_timeout"]
+[connection signal="area_entered" from="HeadHurtbox" to="." method="_on_HeadHurtbox_area_entered"]
+[connection signal="timeout" from="ZigzagAllowedTimer" to="." method="_on_ZigzagAllowedTimer_timeout"]
+[connection signal="timeout" from="ZigzagTimoutTimer" to="." method="_on_ZigzagTimoutTimer_timeout"]
 
+[editable path="SoftCollision"]
 [editable path="Hurtbox"]
+[editable path="HeadHurtbox"]
+[editable path="RayRect"]
+[editable path="Steer"]

@@ -1,217 +1,457 @@
-extends KinematicBody2D
+extends EnemyBase
 
-export(float) var damage = .125
-export(int) var speed = 73.5 # 57.5
-
-const attack_distance = 26
+tool
 
 var heart_scene = preload("res://Heart.tscn")
 var blood_scene = preload("res://Blood.tscn")
-
-var player : Player
+var hit_blood_scene = preload("res://HitBlood.tscn")
 
 onready var sprite : AnimatedSprite = $Graphics/AnimatedSprite
-var facingRight = false
-var canAttack = true
-var can_change_state = true
+onready var animation_player = $AnimationPlayer
+onready var react_area = $ReactArea/CollisionShape2D
+onready var blood_origin = $BloodOrigin
+onready var head_blood_origin = $HeadBloodOrigin
 
-var health_manager = preload("res://Health.gd").new()
-var is_dead = false
+var carried = false
+
+var invincible = false
 
 enum State { IDLE, RUN, HIT, DEAD }
-var current_state = State.IDLE
-var prev_state = current_state
-var velocity = Vector2.ZERO
 
 var player_inside_visibility_area = false
+var player_last_seen_position = null
 var at_gunpoint = false
-var saw_player_time = false
 
-var breadcrumbs = []
-var breadcrumbs_copy = []
+# Zigzaging
+var zigzag_time = 1.75
+var rand_start_zigzag_time: int
+var zigzag_start_time = null
+var last_finished_zigzag_time = 0
+var zigzag_allowed = true
+var zigzag_direction: int
 
-var destination = null
+func _init():
+	attack_distance = 38
+	movement_speed  = 85 # 85
 
-var zigzag_time = 1.5
-var rand_start_zigzag_time : int
 
 func _ready():
 	randomize()
 	rand_start_zigzag_time = rand_range(0, 5)
+	zigzag_direction = 1 if randf() > .5 else -1 
 	
-	player = Global.get_player()
-	
-	health_manager.connect("died", self, "_on_died")
+	$Graphics.scale.x = -1 if facing_right else 1
+		
+	var look_point = global_position + (Vector2.LEFT if facing_right else Vector2.RIGHT)
+	$Vision.look_at(look_point)
+
 
 func sees_player():
-	return player_inside_visibility_area and not $SeePlayerRayCast.is_colliding()
+	return player_inside_visibility_area # and not see_player_raycast.is_colliding()
+
+
+func should_find_path():
+	return (
+		(OS.get_system_time_msecs() - last_found_path_time > 300)
+		and not can_zigzag()
+	)
+
+
+func can_move():
+	return .can_move() and curr_state != State.HIT
+
+
+func can_zigzag():
+	return false
+	return (
+		not stunned and
+		curr_state != State.HIT and
+		at_gunpoint and sees_player() and
+		not Global.pacifist_mode
+	)
+
 
 func _process(delta):
-	is_dead = health_manager.health <= 0
+	._process(delta)
 	
-	if not player:
+	if Engine.editor_hint:
+		$Graphics.scale.x = -1 if facing_right else 1
+		
+		var look_point = global_position + (Vector2.LEFT if facing_right else Vector2.RIGHT)
+		$Vision.look_at(look_point)
+		
+		$Direction.look_at(look_point)
+		
 		return
 	
-	var raycast = $SeePlayerRayCast
-	raycast.cast_to = player.global_position - global_position
-	$Text.text = str(sees_player())
+	$Vision.look_at(global_position - direction)
+
+	.before_process(delta)
 	
-	prev_state = current_state
+	# Can't move if carried
+	if not self.is_dead:
+		if carried:
+			direction = Vector2.ZERO
+			$Collider.disabled = true
+			$Hurtbox.monitoring = false
+			$HeadHurtbox.monitoring = false
+		else:
+			$Hurtbox.monitoring = true
+			$HeadHurtbox.monitoring = true
 	
-	var dir = Vector2.ZERO
-	if not is_dead and can_change_state:
-		if sees_player() and not Global.pacifist_mode:
-			var distance = global_position.distance_to(player.global_position)
-			if distance <= attack_distance:
-				if canAttack:
-					current_state = State.HIT
-					canAttack = false
-					can_change_state = false
-					sprite.play(State.keys()[current_state])
-			else:
-				dir = (player.global_position - global_position).normalized()
-				facingRight = dir.x >= 0
-				current_state = State.RUN
-		
-		if destination != null:
-			dir = (destination - global_position).normalized()
-			facingRight = dir.x >= 0
-			if global_position.distance_to(destination) <= 1:
-				destination = null
-				if len(breadcrumbs) != 0:
-					destination = breadcrumbs.pop_back()
-				else:
-					breadcrumbs_copy = []
-		
-		if at_gunpoint and sees_player():
-			# Gives -1 or 1 after 1.5s
-			var t = sign( fposmod(rand_start_zigzag_time + OS.get_ticks_msec() / (1000 * zigzag_time), 2) -1)
-			var side_vec = (global_position - player.global_position).normalized()
-			side_vec = side_vec.rotated(deg2rad(90 * t))
-			dir = (dir + side_vec).normalized()
-		
-		velocity = dir * speed
+	# Двигает юнит и гасит скорость
+	.after_process(delta)
 	
-	# Debug moving direction
-	$RayCast2D.cast_to = dir * 7
+	$Graphics.scale.x = -1 if facing_right else 1
 	
-	# Постепенно гасит скорость
-	velocity = velocity.move_toward(Vector2.ZERO, delta * 130)
-	velocity = move_and_slide(velocity)
-	
-	$Line2D.global_position = Vector2.ZERO
-	$Line2D.points = breadcrumbs_copy
-	
-	$Graphics.scale.x = -1 if facingRight else 1
+	if curr_state == State.DEAD:
+		can_change_state = false
 	
 	if can_change_state:
-		current_state = State.IDLE
-		if velocity.length() != 0:
-			current_state = State.RUN
+		if velocity.length() == 0:
+			curr_state = State.IDLE
+		else:
+			curr_state = State.RUN
 	
-	if current_state != prev_state:
-		if prev_state == State.HIT:
-			canAttack = true
-	
-	if not is_dead:
-		sprite.play(State.keys()[current_state])
+		sprite.play(State.keys()[curr_state])
 
-func _on_Hurtbox_area_entered(area: Area2D):
-	if area.is_in_group("GunRaycast"):
-		at_gunpoint = true
-		return
+
+func take_damage(damage: float, initiator: Node2D = null, knockback = 110, emit_blood = true):
+	if initiator == null:
+		initiator = self
+
+	if Global.invincible_enemies:
+		damage = 0
 	
-	velocity = (global_position - area.global_position).normalized() * 75
-	if area.get_parent().is_in_group("Bullet"):
-		var bullet = area.get_parent()
-		velocity = bullet.direction.normalized() * 85
-		
-		var blood = blood_scene.instance()
-		blood.look_at(bullet.direction.normalized())
-		blood.global_position = $BloodOrigin.global_position
-		#blood.position += bullet.direction.normalized() * 20
+	.take_damage(damage)
+	if self.health > 0:
+		look_at_point(initiator.global_position)
+	
+	# Анимация получения урона
+	animation_player.play("GOT_DAMAGE")
+	
+	if emit_blood:
+		var blood = hit_blood_scene.instance() as CPUParticles2D
+		blood.look_at((initiator.global_position - global_position).normalized())
+		blood.rotation_degrees += 180
+		blood.global_position = blood_origin.global_position
+		blood.emitting = true
 		blood.show_behind_parent = true
 		get_parent().call_deferred("add_child", blood)
 	
-	# Can't die twice
-	if is_dead:
+	if knockback != 0:
+		can_change_state = false
+		# Отбрасываем врага
+		var direction = (global_position - initiator.global_position).normalized()
+		velocity = direction * knockback
+		yield(get_tree().create_timer(.15), "timeout")
+		can_change_state = true
+
+
+func attack(target: Node2D):
+	if carried:
 		return
 	
-	health_manager.health = 0
-	sprite.play(State.keys()[State.DEAD])
-	remove_child($Hurtbox)
+	.attack(target)
+
+	can_attack = false
+	can_change_state = false
+	curr_state = State.HIT
+	sprite.play(State.keys()[curr_state])
+
+
+func play_animation_once(anim: String):
+	can_change_state = false
+	sprite.play(anim)
+	yield(sprite, "animation_finished")
+	if sprite.frame == 0:
+		sprite.frame = sprite.frames.get_frame_count(anim)
+	sprite.stop()
+	can_change_state = true
+
+
+func _on_HeadHurtbox_area_entered(area):
+	if invincible:
+		return
+	
+	if area.get_parent().is_in_group("PlayerBullet"):
+		var bullet = area.get_parent()
+		take_damage(bullet.damage * 1.85, player, 0)
+		
+		if self.health <= 0:
+			curr_state = State.DEAD
+			sprite.play("DEAD_HEADSHOT")
+		
+		bullet.hit_number += 1
+		
+		var blood2 = preload("res://Blood2.tscn").instance()
+		blood2.global_position = head_blood_origin.global_position
+		blood2.show_behind_parent = true
+		get_parent().call_deferred("add_child", blood2)
+
+
+func _on_Hurtbox_area_entered(area: Area2D):
+	if invincible:
+		return
+	
+	var parent = area.get_parent()
+	if parent.is_in_group("Bonfire"):
+		take_damage(9999, area, 0, false)
+
+	if parent.is_in_group("PlayerBullet"):
+		var bullet = parent
+
+		take_damage(bullet.damage, player, 3)
+		
+		bullet.hit_number += 1
+		
+		var blood = blood_scene.instance()
+		blood.look_at(bullet.direction.normalized())
+		blood.global_position = blood_origin.global_position
+		blood.position += bullet.direction.normalized() * 16
+		blood.show_behind_parent = true
+		get_parent().call_deferred("add_child", blood)
+	
+	if area.is_in_group("GunRaycast"):
+		at_gunpoint = true
+
+	if self.health <= 0:
+		curr_state = State.DEAD
+		play_animation_once("DEAD_BODYSHOT")
 
 
 func _on_Hurtbox_area_exited(area):
 	if area.is_in_group("GunRaycast"):
 		at_gunpoint = false
+		cooldown_zigzag()
 
 
-func _on_died():	
+func _on_died():
+	._on_died()
+
+	can_change_state = false
+	curr_state = State.DEAD
+	play_animation_once("DEAD_BODYSHOT")
+
+	$Vision.monitoring = false
+	remove_child($Hurtbox)
+	remove_child($HeadHurtbox)
+	remove_child(local_group_area)
+	remove_child(big_group_area)
+	
+	yield(get_tree().create_timer(.75), "timeout")
+	remove_child($Collider)
+	
 	return
 	yield(get_tree().create_timer(.5), "timeout")
 	var heart = heart_scene.instance()
 	heart.global_position = global_position + Vector2(1, 1)
 	Global.get_ysort().add_child(heart)
 
-func _on_lost_player():
-	player_inside_visibility_area = false
-	
-	# find closes breadcrumb & remove everything behind
-	var closest_position = null
-	var smallest_distance = INF
-	var _i = -1
-	
-	for i in range(breadcrumbs.size() - 1, 0, -1):
-		var pos = breadcrumbs[i]
-		var distance = global_position.distance_to(pos)
-		if distance < smallest_distance:
-			smallest_distance = distance
-			closest_position = pos
-			_i = i
 
-	breadcrumbs = breadcrumbs.slice(0, _i)
-	breadcrumbs_copy = breadcrumbs.duplicate(true)
-	
-	destination = breadcrumbs.pop_back()
+func get_meeting_point(bodies: Array) -> Vector2:
+	var position = Vector2.ZERO
+	var count = 0
+	for body in bodies:
+		position += body.global_position
+		count += 1
+	return position / count
 
-
-# Can see player
+# Saw player
 func _on_Vision_area_entered(area: Area2D):
-	if area.is_in_group("Breadcrumb"):
-		var breadcrumb = area
-		if player_inside_visibility_area and breadcrumb.birth_time > saw_player_time:
-			breadcrumbs.push_front(breadcrumb.position)
-			breadcrumbs_copy = breadcrumbs.duplicate(true)
-	else:
-		var target = area.get_parent()
-		if target.is_in_group("Player"):
-			saw_player_time = OS.get_ticks_msec()
-			player_inside_visibility_area = true
-			breadcrumbs = []
-			breadcrumbs_copy = []
+	if area.get_parent().is_in_group("Bullet"):
+		var avoided = randf() < .4
+		if avoided:
+			invincible = true
+			play_animation_once("AVOID")
+			yield(get_tree().create_timer(.5), "timeout")
+			invincible = false
+			return
+
+	if area.is_in_group("PlayerHurtbox"):
+		if Global.pacifist_mode:
+			return
+		
+		player_inside_visibility_area = true
+		
+		if chasing:
+			return
+		chasing = true
+		
+		animation_player.play("SPRED_ALARM_AREA")
+		
+		var local_group = local_group_area.get_bodies()
+		var reinforcements = big_group_area.get_bodies()
+		
+		return
+		
+		# никого нет рядом, но есть любое подкрепление
+		if local_group.size() == 1 and reinforcements.size() > 1:
+		
+			# Если хотя бы один из подмоги файтится, то
+			# тоже начинаем файтиться
+			for body in reinforcements:
+				if body == self:
+					continue
+				if body.chasing:
+					print(body, " файтится, надо и мне")
+					return
+			
+			curr_tactic = Tactics.RUN
+			
+			# Находим точку встречи
+			var meet_point = get_meeting_point(reinforcements)
+			
+			# Бежим к ней
+			#find_path(meet_point, 40)
+			print(self, " Бегу к подмоге! ", meet_point)
+			
+			# Заставляем всю подмогу бежать к ней
+			for enemy in reinforcements:
+				enemy.find_path(meet_point, 40)
+		
+		elif local_group.size() > 1:
+			# В поддержке есть стрелок, но его нет в локальной группе
+			if not local_group_area.has("Hunter") and big_group_area.has("Hunter"):
+				print("Бегу к стрелку!")
+				# Находим точку встречи
+				var frienly_unit = big_group_area.get_group_member("Hunter")
+				var meet_point = frienly_unit.global_position
+				# Заставляем всю локальную группу бежать к стрелку
+				for enemy in local_group:
+					enemy.curr_tactic = Tactics.RUN
+					find_path(meet_point, 55)
+			else:
+				print("Ебашим вместе!")
+				# Заставляем всю локальную группу атаковать гг
+				for enemy in local_group:
+					enemy.curr_tactic = Tactics.ATTACK
+					enemy.find_path(player.global_position)
 
 
 # Lost player
 func _on_Vision_area_exited(area: Area2D):
-	if area.is_in_group("Breadcrumb"):
-		pass
-	else:
-		var target = area.get_parent()
-		if target.is_in_group("Player"):
-			_on_lost_player()
+	if area.is_in_group("PlayerHurtbox"):
+		if Global.pacifist_mode:
+			return
+		
+		_on_lost_player(area.get_parent().global_position)
+
+
+func _on_lost_player(last_seen_position: Vector2):
+	player_inside_visibility_area = false
+	player_last_seen_position = last_seen_position
+	look_at_point(player_last_seen_position)
+	._on_lost_player(last_seen_position)
+
+
+func _on_reached_destination():
+	._on_reached_destination()
+	# print("reached dest")
+	if not player_inside_visibility_area:
+		chasing = false
+		print("Not chasing!")
+
+
+func _on_AnimatedSprite_frame_changed():
+	if sprite == null:
+		return
+	
+	var frame = sprite.frame
+	match curr_state:
+		State.HIT:
+			match frame:
+				9:
+					var distance = global_position.distance_to(player.global_position)
+					# small dash towards the player
+					global_position += (
+						(player.global_position - global_position).normalized() *
+						min(14, distance - 12)
+					)
+
+				10:
+					var distance = global_position.distance_to(player.global_position)
+					if distance <= 35:
+							player.take_damage(damage, self, 13)
 
 
 func _on_AnimatedSprite_animation_finished():
-	match current_state:
+	match curr_state:
 		State.HIT:
-			var distance = global_position.distance_to(player.global_position)
-			if distance <= attack_distance + 15:
-				player.take_damage(damage, self)
-			
 			can_change_state = true
+			if player_last_seen_position:
+				look_at_point(player_last_seen_position)
 			
 			# Cooldown
 			yield(get_tree().create_timer(.65), "timeout")
-			canAttack = true
+			can_attack = true
 
+
+# Аларм захватил врага
+func _on_ReactArea_body_entered(body: Node2D):
+	if body == self:
+		return
+	
+	if body.is_in_group("Enemy"):
+		body.player_inside_visibility_area = true
+		pass
+
+
+func cooldown_zigzag():
+	if $ZigzagTimoutTimer.is_stopped():
+		$ZigzagTimoutTimer.start(rand_range(3, 5))
+		zigzag_allowed = false
+
+
+func _on_ZigzagAllowedTimer_timeout():
+	cooldown_zigzag()
+
+
+func _on_ZigzagTimoutTimer_timeout():
+	zigzag_allowed = true
+	zigzag_direction = 1 if randf() > .5 else -1
+
+
+func look_at_point(look_point: Vector2):
+	facing_right = look_point.x >= global_position.x
+	# $Graphics.scale.x = -1 if facing_right else 1
+		
+	$Vision.look_at(look_point)
+	$Vision.rotation_degrees += 180
+	#$Direction.look_at(look_point)
+	#$Direction.rotation_degrees += 180
+
+
+func modify_direction(direction: Vector2):
+	# return .modify_direction(direction)
+
+	# var direction = d
+	if can_zigzag():
+		# Gives -1 or 1 after 1.5s
+		var t = sign( fposmod(rand_start_zigzag_time + OS.get_ticks_msec() / (1000 * zigzag_time), 2) -1 )
+		# var t = zigzag_direction
+		var side_vec = (global_position - player.global_position).normalized()
+		side_vec = side_vec.rotated(deg2rad(115 * t))
+		direction = (direction + side_vec).normalized()
+		
+		last_found_path_time = OS.get_system_time_msecs()
+
+	
+	# if global_position.distance_to(player.global_position) < 90:
+	# 	direction = direction.rotated(deg2rad(90))
+
+	return $Steer.modify_direction(direction)
+
+
+# Услышал шаги игрока
+func _on_HearArea_area_entered(area: Area2D):
+	if (
+		not Global.pacifist_mode 
+		and not self.is_dead 
+		and not chasing
+		and not player_inside_visibility_area
+	):
+		var look_point = area.get_parent().global_position
+		$BgAnimationPlayer.play("QUESTION")
+		yield(get_tree().create_timer(.6), "timeout")
+		look_at_point(look_point)

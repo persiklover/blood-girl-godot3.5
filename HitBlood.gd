@@ -1,5 +1,8 @@
 extends CPUParticles2D
 
+func _ready():
+	one_shot = true
+
 func _on_Timer_timeout():
 	set_process(false)
 	set_physics_process(false)

@@ -8,14 +8,13 @@ shader = ExtResource( 2 )
 shader_param/base_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="CapsuleShape2D" id=18]
-radius = 5.00002
-height = 24.0
+radius = 6.00008
+height = 21.9998
 
 [node name="TheEntity" type="AnimatedSprite"]
 material = SubResource( 17 )
 frames = ExtResource( 1 )
 animation = "IDLE"
-frame = 1
 playing = true
 offset = Vector2( 0, -17 )
 

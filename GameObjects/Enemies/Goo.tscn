@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/goo.res" type="SpriteFrames" id=1]
+[ext_resource path="res://GameObjects/Enemies/Goo.gd" type="Script" id=2]
+[ext_resource path="res://img/shadow.png" type="Texture" id=3]
+[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=4]
+[ext_resource path="res://GameObjects/RayRect.tscn" type="PackedScene" id=5]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 4.0
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 6.0
+height = 0.0
+
+[node name="Goo" type="KinematicBody2D"]
+collision_layer = 4
+collision_mask = 519
+script = ExtResource( 2 )
+
+[node name="Collider" type="CollisionShape2D" parent="."]
+show_behind_parent = true
+shape = SubResource( 1 )
+
+[node name="RayRect" parent="." instance=ExtResource( 5 )]
+visible = false
+
+[node name="Graphics" type="Node2D" parent="."]
+
+[node name="Shadow" type="Sprite" parent="Graphics"]
+position = Vector2( 0.545455, 0.5 )
+scale = Vector2( 1.09091, 1.125 )
+texture = ExtResource( 3 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Graphics"]
+frames = ExtResource( 1 )
+animation = "IDLE"
+frame = 5
+playing = true
+offset = Vector2( 1, -10 )
+
+[node name="Hurtbox" parent="." instance=ExtResource( 4 )]
+collision_layer = 8
+collision_mask = 516
+
+[node name="CollisionShape2D" parent="Hurtbox" index="0"]
+position = Vector2( 0, -5 )
+shape = SubResource( 2 )
+
+[node name="PathLine2D" type="Line2D" parent="."]
+width = 2.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="SeePlayerRayCast" type="RayCast2D" parent="."]
+visible = false
+enabled = true
+cast_to = Vector2( 0, 15 )
+collision_mask = 513
+
+[connection signal="animation_finished" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="frame_changed" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
+
+[editable path="Hurtbox"]

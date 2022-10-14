@@ -1,0 +1,48 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://GameObjects/Hitbox.tscn" type="PackedScene" id=1]
+[ext_resource path="res://img/enemy-bullet.png" type="Texture" id=2]
+[ext_resource path="res://Bullet.gd" type="Script" id=3]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 3.00001
+height = 0.0
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 3.00001
+height = 0.0
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+loop = true
+
+[sub_resource type="Animation" id=4]
+resource_name = "START"
+length = 0.6
+step = 0.01
+
+[node name="EnemyBullet" type="KinematicBody2D" groups=["Bullet", "EnemyBullet"]]
+collision_layer = 1024
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0.5, 0.5 )
+texture = ExtResource( 2 )
+
+[node name="Collider" type="CollisionShape2D" parent="."]
+rotation = 1.57079
+shape = SubResource( 1 )
+
+[node name="Hitbox" parent="." instance=ExtResource( 1 )]
+collision_layer = 512
+collision_mask = 2
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+rotation = 1.57079
+shape = SubResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 3 )
+anims/START = SubResource( 4 )
+
+[editable path="Hitbox"]

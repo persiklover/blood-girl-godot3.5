@@ -1,13 +1,8 @@
-[gd_scene load_steps=3 format=2]
-
-[ext_resource path="res://shaders/Hurtbox.shader" type="Shader" id=1]
-
-[sub_resource type="ShaderMaterial" id=1]
-shader = ExtResource( 1 )
+[gd_scene format=2]
 
 [node name="Hurtbox" type="Area2D"]
 collision_layer = 0
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-material = SubResource( 1 )
+modulate = Color( 0, 0.368627, 1, 1 )
