@@ -1,6 +1,6 @@
 extends CPUParticles2D
 
-var player : Player
+onready var player = Global.get_player()
 var stopped = false
 var player_stands_on = false
 
@@ -14,8 +14,6 @@ var staling_speed_sec = 15
 var heal_particle_scene = preload("res://HealParticle.tscn")
 
 func _ready():
-	player = Global.get_player()
-	
 	yield(get_tree().create_timer(staling_speed_sec), "timeout")
 	freshness = .666
 	color = color.darkened(.2)

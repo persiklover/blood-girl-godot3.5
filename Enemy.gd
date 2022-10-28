@@ -123,6 +123,7 @@ func take_damage(damage: float, initiator: Node2D = null, knockback = 110, emit_
 	if Global.invincible_enemies:
 		damage = 0
 	
+	$HitSFX.play()
 	.take_damage(damage)
 	if self.health > 0:
 		look_at_point(initiator.global_position)
@@ -174,9 +175,15 @@ func _on_HeadHurtbox_area_entered(area):
 	if invincible:
 		return
 	
-	if area.get_parent().is_in_group("PlayerBullet"):
+	var parent: Node2D = area.get_parent()
+
+	if parent.is_in_group("Grabbable"):
+		if parent.active:
+			take_damage(.5)
+	
+	elif parent.is_in_group("PlayerBullet"):
 		var bullet = area.get_parent()
-		take_damage(bullet.damage * 1.85, player, 0)
+		take_damage(bullet.damage * 2.8, player, 0)
 		
 		if self.health <= 0:
 			curr_state = State.DEAD
@@ -194,11 +201,16 @@ func _on_Hurtbox_area_entered(area: Area2D):
 	if invincible:
 		return
 	
-	var parent = area.get_parent()
-	if parent.is_in_group("Bonfire"):
+	var parent: Node2D = area.get_parent()
+
+	if parent.is_in_group("Grabbable"):
+		if parent.active:
+			take_damage(.5)
+
+	elif parent.is_in_group("Bonfire"):
 		take_damage(9999, area, 0, false)
 
-	if parent.is_in_group("PlayerBullet"):
+	elif parent.is_in_group("PlayerBullet"):
 		var bullet = parent
 
 		take_damage(bullet.damage, player, 3)
@@ -212,7 +224,7 @@ func _on_Hurtbox_area_entered(area: Area2D):
 		blood.show_behind_parent = true
 		get_parent().call_deferred("add_child", blood)
 	
-	if area.is_in_group("GunRaycast"):
+	elif area.is_in_group("GunRaycast"):
 		at_gunpoint = true
 
 	if self.health <= 0:
@@ -260,7 +272,7 @@ func get_meeting_point(bodies: Array) -> Vector2:
 # Saw player
 func _on_Vision_area_entered(area: Area2D):
 	if area.get_parent().is_in_group("Bullet"):
-		var avoided = randf() < .4
+		var avoided = randf() < 0 # .4
 		if avoided:
 			invincible = true
 			play_animation_once("AVOID")

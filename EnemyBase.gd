@@ -19,20 +19,14 @@ var chasing = false
 enum Tactics { ATTACK, PREPARE, RUN }
 var curr_tactic = Tactics.ATTACK
 
-func _ready():
-	pass
 
 func before_process(delta):
 	.before_process(delta)
-
-	raycast.cast_to = player.global_position - global_position
 	
 	if not self.is_dead:
 		if Global.pacifist_mode:
 			return
 
-		# if destination != null:
-		# 	pass
 		if sees_player():
 			find_path(player.global_position)
 
@@ -107,10 +101,17 @@ func _on_health_changed(health: float):
 		health_bar.color = color
 
 
+func _on_died():
+	._on_died()
+	if soft_collision:
+		remove_child(soft_collision)
+
+
 func take_damage(damage: float):
 	.take_damage(damage)
 	if self.health > 0:
 		show_health_bar()
+
 
 func show_health_bar():
 	$HealthBar.visible = true
@@ -120,11 +121,6 @@ func show_health_bar():
 
 func _on_lost_player(last_seen_position: Vector2):
 	find_path(last_seen_position)
-
-
-func _on_died():
-	if soft_collision:
-		remove_child(soft_collision)
 
 
 func _draw():

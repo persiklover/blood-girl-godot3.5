@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=48 format=2]
 
 [ext_resource path="res://img/shadow.png" type="Texture" id=1]
 [ext_resource path="res://aseprite-wizard-output/mc.res" type="SpriteFrames" id=2]
@@ -10,11 +10,18 @@
 [ext_resource path="res://aseprite-wizard-output/torso.res" type="SpriteFrames" id=8]
 [ext_resource path="res://aseprite-wizard-output/heart.res" type="SpriteFrames" id=9]
 [ext_resource path="res://shaders/Outline.shader" type="Shader" id=10]
-[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=11]
+[ext_resource path="res://Triggers/Hitbox/Hitbox.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Camera.gd" type="Script" id=12]
-[ext_resource path="res://GUI.gd" type="Script" id=13]
+[ext_resource path="res://sounds/GunShotSnglShotEx PE1097508.mp3" type="AudioStream" id=13]
 [ext_resource path="res://Dialog.tscn" type="PackedScene" id=14]
 [ext_resource path="res://GameObjects/UI/Loader.tscn" type="PackedScene" id=15]
+[ext_resource path="res://img/gun.png" type="Texture" id=16]
+[ext_resource path="res://sounds/mixkit-revolver-chamber-spin-1674.wav" type="AudioStream" id=17]
+[ext_resource path="res://sounds/click.wav" type="AudioStream" id=18]
+[ext_resource path="res://sounds/steps.wav" type="AudioStream" id=19]
+[ext_resource path="res://sounds/punch.wav" type="AudioStream" id=20]
+[ext_resource path="res://sounds/grab.wav" type="AudioStream" id=21]
+[ext_resource path="res://sounds/dash.wav" type="AudioStream" id=22]
 
 [sub_resource type="CapsuleShape2D" id=5]
 radius = 3.5
@@ -22,6 +29,8 @@ height = 8.0
 
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 4.5, 8.5 )
+
+[sub_resource type="ShaderMaterial" id=48]
 
 [sub_resource type="Shader" id=18]
 
@@ -34,6 +43,21 @@ height = 12.0
 
 [sub_resource type="RectangleShape2D" id=24]
 extents = Vector2( 60.375, 14.3125 )
+
+[sub_resource type="Animation" id=49]
+resource_name = "RELOAD"
+tracks/0/type = "value"
+tracks/0/path = NodePath("../../../ReloadSFX:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
 [sub_resource type="Animation" id=31]
 length = 0.001
@@ -49,44 +73,20 @@ tracks/0/keys = {
 "update": 0,
 "values": [ 0.0 ]
 }
-
-[sub_resource type="Animation" id=32]
-resource_name = "SHOOT"
-length = 0.185
-
-[sub_resource type="ShaderMaterial" id=40]
-shader = ExtResource( 10 )
-shader_param/line_color = Color( 0.172549, 0.180392, 0.188235, 1 )
-shader_param/line_thickness = 0.0
-
-[sub_resource type="Animation" id=23]
-resource_name = "CHECK_HEALTH"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/TorsoPivot/Heart:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0.8, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ false, true ]
-}
 tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/TorsoPivot/LeftArm:frame")
+tracks/1/path = NodePath("../../../ShootSFX:playing")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
-"update": 1,
-"values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Graphics/TorsoPivot/LeftArm:animation")
+tracks/2/path = NodePath("../../../ReloadSFX:playing")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -94,57 +94,30 @@ tracks/2/enabled = true
 tracks/2/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ "CHECK" ]
-}
-tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/Heart:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0.8, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ Vector2( 1, -9 ), Vector2( 15, -21 ) ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("Graphics/TorsoPivot/Heart:scale")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
-"times": PoolRealArray( 0.8, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector2( 0.75, 0.4 ), Vector2( 1, 1 ) ]
+"values": [ false ]
 }
-tracks/5/type = "value"
-tracks/5/path = NodePath("Graphics/TorsoPivot/Torso:animation")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
-"times": PoolRealArray( 0, 0.1, 0.8, 0.9 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+
+[sub_resource type="Animation" id=32]
+resource_name = "SHOOT"
+length = 0.145
+tracks/0/type = "value"
+tracks/0/path = NodePath("../../../ShootSFX:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ "MIDDLE", "MIDDLE-DOWN", "MIDDLE-DOWN", "MIDDLE" ]
+"values": [ true ]
 }
-tracks/6/type = "value"
-tracks/6/path = NodePath("Graphics/TorsoPivot/Torso:frame")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 0 ]
-}
+
+[sub_resource type="ShaderMaterial" id=40]
+shader = ExtResource( 10 )
+shader_param/line_color = Color( 0.172549, 0.180392, 0.188235, 1 )
+shader_param/line_thickness = 0.0
 
 [sub_resource type="Animation" id=47]
 resource_name = "DASH"
@@ -157,7 +130,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.6 ),
+"times": PoolRealArray( 0, 0.65 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
 "values": [ false, true ]
@@ -169,7 +142,7 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.6 ),
+"times": PoolRealArray( 0, 0.65 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
 "values": [ true, false ]
@@ -205,10 +178,10 @@ tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.55 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+"values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
 }
 tracks/5/type = "method"
 tracks/5/path = NodePath(".")
@@ -265,123 +238,8 @@ tracks/8/keys = {
 "update": 1,
 "values": [ 517, 513, 513, 517 ]
 }
-
-[sub_resource type="Animation" id=28]
-resource_name = "PUNCH"
-length = 0.5
-step = 0.05
-tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/TorsoPivot/LeftArm:animation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ "PUNCH" ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/TorsoPivot/LeftArm:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
-"update": 1,
-"values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
-}
-tracks/2/type = "value"
-tracks/2/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:visible")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
-"update": 1,
-"values": [  ]
-}
-tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ) ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:rotation_degrees")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = false
-tracks/4/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
-"update": 0,
-"values": [  ]
-}
-tracks/5/type = "value"
-tracks/5/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast/CollisionShape2D:disabled")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ true ]
-}
-tracks/6/type = "method"
-tracks/6/path = NodePath(".")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0.4 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "on_punch"
-} ]
-}
-tracks/7/type = "value"
-tracks/7/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 0.541176, 0.541176, 0.541176, 1 ) ]
-}
-tracks/8/type = "value"
-tracks/8/path = NodePath("Graphics/TorsoPivot/Torso:animation")
-tracks/8/interp = 1
-tracks/8/loop_wrap = true
-tracks/8/imported = false
-tracks/8/enabled = true
-tracks/8/keys = {
-"times": PoolRealArray( 0, 0.1, 0.25 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 1,
-"values": [ "MIDDLE-UP", "UP", "MIDDLE" ]
-}
 tracks/9/type = "value"
-tracks/9/path = NodePath("Graphics/TorsoPivot/Torso:speed_scale")
+tracks/9/path = NodePath("DashSFX:playing")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/imported = false
@@ -389,50 +247,14 @@ tracks/9/enabled = true
 tracks/9/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ 1.0 ]
-}
-tracks/10/type = "value"
-tracks/10/path = NodePath("Graphics/TorsoPivot/Torso:position")
-tracks/10/interp = 1
-tracks/10/loop_wrap = true
-tracks/10/imported = false
-tracks/10/enabled = true
-tracks/10/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ) ]
-}
-tracks/11/type = "value"
-tracks/11/path = NodePath("Graphics/TorsoPivot/LeftArm:position")
-tracks/11/interp = 1
-tracks/11/loop_wrap = true
-tracks/11/imported = false
-tracks/11/enabled = true
-tracks/11/keys = {
-"times": PoolRealArray( 0, 0.1, 0.25, 0.3 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ Vector2( 5, -13 ), Vector2( 5, -12 ), Vector2( 5, -14 ), Vector2( 5, -14 ) ]
-}
-tracks/12/type = "value"
-tracks/12/path = NodePath("Graphics/TorsoPivot/RotAxis:position")
-tracks/12/interp = 1
-tracks/12/loop_wrap = true
-tracks/12/imported = false
-tracks/12/enabled = true
-tracks/12/keys = {
-"times": PoolRealArray( 0, 0.1, 0.25 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 1,
-"values": [ Vector2( -2, -14 ), Vector2( -1, -12 ), Vector2( -3, -13 ) ]
+"values": [ true ]
 }
 
 [sub_resource type="Animation" id=21]
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:position")
+tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -444,7 +266,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:rotation_degrees")
+tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -468,7 +290,7 @@ tracks/2/keys = {
 "values": [  ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/LeftArm:frame")
+tracks/3/path = NodePath("Graphics/TorsoPivot/Heart:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -480,7 +302,7 @@ tracks/3/keys = {
 "values": [  ]
 }
 tracks/4/type = "value"
-tracks/4/path = NodePath("Graphics/TorsoPivot/LeftArm:animation")
+tracks/4/path = NodePath("Graphics/TorsoPivot/Heart:scale")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
@@ -492,31 +314,31 @@ tracks/4/keys = {
 "values": [  ]
 }
 tracks/5/type = "value"
-tracks/5/path = NodePath("Graphics/TorsoPivot/Heart:position")
+tracks/5/path = NodePath("Graphics:modulate")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [  ]
+"values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/6/type = "value"
-tracks/6/path = NodePath("Graphics/TorsoPivot/Heart:scale")
+tracks/6/path = NodePath("Graphics:self_modulate")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/imported = false
 tracks/6/enabled = true
 tracks/6/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [  ]
+"values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/7/type = "value"
-tracks/7/path = NodePath("Graphics:modulate")
+tracks/7/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:visible")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/imported = false
@@ -525,10 +347,10 @@ tracks/7/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
+"values": [ true ]
 }
 tracks/8/type = "value"
-tracks/8/path = NodePath("Graphics:self_modulate")
+tracks/8/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin/Raycast/CollisionShape2D:disabled")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/imported = false
@@ -537,22 +359,21 @@ tracks/8/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
+"values": [ false ]
 }
-tracks/9/type = "value"
-tracks/9/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:visible")
+tracks/9/type = "method"
+tracks/9/path = NodePath(".")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/imported = false
 tracks/9/enabled = true
 tracks/9/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ true ]
+"times": PoolRealArray(  ),
+"transitions": PoolRealArray(  ),
+"values": [  ]
 }
 tracks/10/type = "value"
-tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast/CollisionShape2D:disabled")
+tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/Hitbox:rotation_degrees")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/imported = false
@@ -561,21 +382,22 @@ tracks/10/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ false ]
+"values": [ 0.0 ]
 }
-tracks/11/type = "method"
-tracks/11/path = NodePath(".")
+tracks/11/type = "value"
+tracks/11/path = NodePath("Graphics/TorsoPivot/RotAxis/Hitbox:position")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/imported = false
 tracks/11/enabled = true
 tracks/11/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
-"values": [  ]
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -1, 14 ) ]
 }
 tracks/12/type = "value"
-tracks/12/path = NodePath("Graphics/TorsoPivot/RotAxis/Hitbox:rotation_degrees")
+tracks/12/path = NodePath("Graphics/TorsoPivot/LeftArm:offset")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/imported = false
@@ -584,22 +406,22 @@ tracks/12/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 0.0 ]
+"values": [ Vector2( -3, -15 ) ]
 }
 tracks/13/type = "value"
-tracks/13/path = NodePath("Graphics/TorsoPivot/RotAxis/Hitbox:position")
+tracks/13/path = NodePath("Graphics/TorsoPivot/LeftArm:position")
 tracks/13/interp = 1
 tracks/13/loop_wrap = true
 tracks/13/imported = false
 tracks/13/enabled = true
 tracks/13/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray(  ),
+"transitions": PoolRealArray(  ),
 "update": 0,
-"values": [ Vector2( -1, 14 ) ]
+"values": [  ]
 }
 tracks/14/type = "value"
-tracks/14/path = NodePath("Graphics/TorsoPivot/LeftArm:offset")
+tracks/14/path = NodePath("Graphics/TorsoPivot/LeftArm:rotation_degrees")
 tracks/14/interp = 1
 tracks/14/loop_wrap = true
 tracks/14/imported = false
@@ -611,31 +433,31 @@ tracks/14/keys = {
 "values": [  ]
 }
 tracks/15/type = "value"
-tracks/15/path = NodePath("Graphics/TorsoPivot/LeftArm:position")
+tracks/15/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/15/interp = 1
 tracks/15/loop_wrap = true
 tracks/15/imported = false
 tracks/15/enabled = true
 tracks/15/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [  ]
+"values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/16/type = "value"
-tracks/16/path = NodePath("Graphics/TorsoPivot/LeftArm:rotation_degrees")
+tracks/16/path = NodePath("Graphics/TorsoPivot:position")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
 tracks/16/imported = false
 tracks/16/enabled = true
 tracks/16/keys = {
-"times": PoolRealArray(  ),
-"transitions": PoolRealArray(  ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [  ]
+"values": [ Vector2( 0, 0 ) ]
 }
 tracks/17/type = "value"
-tracks/17/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/17/path = NodePath("Graphics/Legs:frame")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/imported = false
@@ -644,10 +466,10 @@ tracks/17/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
+"values": [ 0 ]
 }
 tracks/18/type = "value"
-tracks/18/path = NodePath("Graphics/TorsoPivot:position")
+tracks/18/path = NodePath("Graphics/Legs:animation")
 tracks/18/interp = 1
 tracks/18/loop_wrap = true
 tracks/18/imported = false
@@ -656,10 +478,10 @@ tracks/18/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 0, 0 ) ]
+"values": [ "IDLE" ]
 }
 tracks/19/type = "value"
-tracks/19/path = NodePath("Graphics/Legs:frame")
+tracks/19/path = NodePath("Graphics/Legs:playing")
 tracks/19/interp = 1
 tracks/19/loop_wrap = true
 tracks/19/imported = false
@@ -668,10 +490,10 @@ tracks/19/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 0 ]
+"values": [ false ]
 }
 tracks/20/type = "value"
-tracks/20/path = NodePath("Graphics/Legs:animation")
+tracks/20/path = NodePath("Graphics:visible")
 tracks/20/interp = 1
 tracks/20/loop_wrap = true
 tracks/20/imported = false
@@ -680,10 +502,10 @@ tracks/20/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ "IDLE" ]
+"values": [ true ]
 }
 tracks/21/type = "value"
-tracks/21/path = NodePath("Graphics/Legs:playing")
+tracks/21/path = NodePath("AnimatedSprite:visible")
 tracks/21/interp = 1
 tracks/21/loop_wrap = true
 tracks/21/imported = false
@@ -695,7 +517,7 @@ tracks/21/keys = {
 "values": [ false ]
 }
 tracks/22/type = "value"
-tracks/22/path = NodePath("Graphics:visible")
+tracks/22/path = NodePath("AnimatedSprite:frame")
 tracks/22/interp = 1
 tracks/22/loop_wrap = true
 tracks/22/imported = false
@@ -704,10 +526,10 @@ tracks/22/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ true ]
+"values": [ 1 ]
 }
 tracks/23/type = "value"
-tracks/23/path = NodePath("AnimatedSprite:visible")
+tracks/23/path = NodePath("AnimatedSprite:modulate")
 tracks/23/interp = 1
 tracks/23/loop_wrap = true
 tracks/23/imported = false
@@ -716,10 +538,10 @@ tracks/23/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ false ]
+"values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/24/type = "value"
-tracks/24/path = NodePath("AnimatedSprite:frame")
+tracks/24/path = NodePath("DashSFX:playing")
 tracks/24/interp = 1
 tracks/24/loop_wrap = true
 tracks/24/imported = false
@@ -728,22 +550,10 @@ tracks/24/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 1 ]
-}
-tracks/25/type = "value"
-tracks/25/path = NodePath("AnimatedSprite:modulate")
-tracks/25/interp = 1
-tracks/25/loop_wrap = true
-tracks/25/imported = false
-tracks/25/enabled = true
-tracks/25/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
+"values": [ false ]
 }
 
-[sub_resource type="Animation" id=30]
+[sub_resource type="Animation" id=50]
 resource_name = "RUN"
 length = 0.6
 loop = true
@@ -795,6 +605,18 @@ tracks/3/keys = {
 "update": 1,
 "values": [ Vector2( 0, 0 ), Vector2( 0, 0 ), Vector2( 0, 3 ), Vector2( 0, 0 ), Vector2( 0, 0 ), Vector2( 1, 2 ) ]
 }
+tracks/4/type = "value"
+tracks/4/path = NodePath("StepSFX:playing")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0.3, 0.6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, true ]
+}
 
 [sub_resource type="Animation" id=29]
 resource_name = "STAB"
@@ -835,7 +657,7 @@ tracks/2/keys = {
 "values": [ Vector2( 4, -13 ), Vector2( 4, -14 ) ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -1111,7 +933,7 @@ tracks/1/keys = {
 "values": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:visible")
+tracks/2/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -1123,7 +945,7 @@ tracks/2/keys = {
 "values": [  ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:position")
+tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -1135,7 +957,7 @@ tracks/3/keys = {
 "values": [ Vector2( 0, 0 ) ]
 }
 tracks/4/type = "value"
-tracks/4/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:rotation_degrees")
+tracks/4/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:rotation_degrees")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
@@ -1147,7 +969,7 @@ tracks/4/keys = {
 "values": [  ]
 }
 tracks/5/type = "value"
-tracks/5/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast/CollisionShape2D:disabled")
+tracks/5/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin/Raycast/CollisionShape2D:disabled")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/imported = false
@@ -1173,7 +995,7 @@ tracks/6/keys = {
 } ]
 }
 tracks/7/type = "value"
-tracks/7/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/7/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/imported = false
@@ -1272,7 +1094,7 @@ tracks/14/keys = {
 [sub_resource type="Animation" id=36]
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:position")
+tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -1284,7 +1106,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:rotation_degrees")
+tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -1380,7 +1202,7 @@ tracks/8/keys = {
 "values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/9/type = "value"
-tracks/9/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:visible")
+tracks/9/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:visible")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/imported = false
@@ -1392,7 +1214,7 @@ tracks/9/keys = {
 "values": [ true ]
 }
 tracks/10/type = "value"
-tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast/CollisionShape2D:disabled")
+tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin/Raycast/CollisionShape2D:disabled")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/imported = false
@@ -1475,7 +1297,7 @@ tracks/16/keys = {
 "values": [ 0.0 ]
 }
 tracks/17/type = "value"
-tracks/17/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/17/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/imported = false
@@ -1630,94 +1452,17 @@ tracks/29/keys = {
 "update": 0,
 "values": [ Vector2( 10, -7 ) ]
 }
-
-[sub_resource type="Animation" id=37]
-resource_name = "RUN"
-length = 0.6
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/Legs:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1 ),
-"update": 1,
-"values": [ 0, 1, 2, 3, 4, 5, 5 ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/Legs:animation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
+tracks/30/type = "value"
+tracks/30/path = NodePath("StepSFX:playing")
+tracks/30/interp = 1
+tracks/30/loop_wrap = true
+tracks/30/imported = false
+tracks/30/enabled = true
+tracks/30/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ "RUN" ]
-}
-tracks/2/type = "value"
-tracks/2/path = NodePath("Graphics/Legs:playing")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
+"update": 0,
 "values": [ false ]
-}
-tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ), Vector2( 0, 0 ), Vector2( 0, 3 ), Vector2( 0, 0 ), Vector2( 0, 0 ), Vector2( 1, 2 ) ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("Graphics/TorsoPivot/LeftArm:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
-"update": 1,
-"values": [ Vector2( 3, -14 ), Vector2( 3, -14 ), Vector2( 3, -16 ), Vector2( 5, -14 ), Vector2( 5, -14 ), Vector2( 3, -15 ) ]
-}
-tracks/5/type = "value"
-tracks/5/path = NodePath("Graphics/TorsoPivot/LeftArm:animation")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ "RUN" ]
-}
-tracks/6/type = "value"
-tracks/6/path = NodePath("Graphics/TorsoPivot/LeftArm:frame")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.2, 0.3, 0.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
-"update": 1,
-"values": [ 0, 1, 2, 3 ]
 }
 
 [sub_resource type="Animation" id=39]
@@ -1759,7 +1504,7 @@ tracks/2/keys = {
 "values": [ Vector2( 4, -13 ), Vector2( 4, -14 ) ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/3/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -1868,7 +1613,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id=45]
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:position")
+tracks/0/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -1880,7 +1625,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:rotation_degrees")
+tracks/1/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -1976,7 +1721,7 @@ tracks/8/keys = {
 "values": [ Color( 1, 1, 1, 1 ) ]
 }
 tracks/9/type = "value"
-tracks/9/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:visible")
+tracks/9/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:visible")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/imported = false
@@ -1988,7 +1733,7 @@ tracks/9/keys = {
 "values": [ true ]
 }
 tracks/10/type = "value"
-tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast/CollisionShape2D:disabled")
+tracks/10/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin/Raycast/CollisionShape2D:disabled")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/imported = false
@@ -2071,7 +1816,7 @@ tracks/16/keys = {
 "values": [  ]
 }
 tracks/17/type = "value"
-tracks/17/path = NodePath("Graphics/TorsoPivot/RotAxis/Revolver:modulate")
+tracks/17/path = NodePath("Graphics/TorsoPivot/RotAxis/RightHand:modulate")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/imported = false
@@ -2199,33 +1944,12 @@ margin_right = 168.0
 margin_bottom = -78.0
 color = Color( 0, 0, 0, 1 )
 
-[node name="GUI" type="Control" parent="Camera2D"]
-margin_left = -128.0
-margin_top = -70.0
-margin_right = 128.0
-margin_bottom = 80.0
-script = ExtResource( 13 )
-
-[node name="HealthBarBg" type="ColorRect" parent="Camera2D/GUI"]
-margin_left = 42.0
-margin_top = 137.0
-margin_right = 214.0
-margin_bottom = 144.0
-rect_pivot_offset = Vector2( 86, 3 )
-color = Color( 0.270588, 0.270588, 0.270588, 0.827451 )
-
-[node name="HealthBar" type="ColorRect" parent="Camera2D/GUI"]
-margin_left = 42.0
-margin_top = 137.0
-margin_right = 214.0
-margin_bottom = 144.0
-color = Color( 0.654902, 0.054902, 0.054902, 1 )
-
 [node name="Dialog" parent="Camera2D" instance=ExtResource( 14 )]
 visible = false
 
 [node name="ShakeTimer" type="Timer" parent="Camera2D"]
 wait_time = 0.298
+one_shot = true
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 position = Vector2( 0.5, -0.5 )
@@ -2255,15 +1979,19 @@ frame = 1
 offset = Vector2( 1, -28 )
 
 [node name="Graphics" type="Node2D" parent="."]
+material = SubResource( 48 )
 
 [node name="Legs" type="AnimatedSprite" parent="Graphics"]
+use_parent_material = true
 frames = ExtResource( 3 )
 animation = "IDLE"
 offset = Vector2( 1, -28 )
 
 [node name="TorsoPivot" type="Node2D" parent="Graphics"]
+use_parent_material = true
 
 [node name="RotAxis" type="Node2D" parent="Graphics/TorsoPivot"]
+use_parent_material = true
 position = Vector2( -4, -13 )
 
 [node name="Hitbox" parent="Graphics/TorsoPivot/RotAxis" groups=["PlayerHitbox"] instance=ExtResource( 5 )]
@@ -2278,27 +2006,36 @@ position = Vector2( -12, -11 )
 shape = SubResource( 26 )
 disabled = true
 
-[node name="Revolver" type="Sprite" parent="Graphics/TorsoPivot/RotAxis"]
+[node name="Gun" type="Sprite" parent="Graphics/TorsoPivot/RotAxis"]
+use_parent_material = true
+position = Vector2( -10, 0 )
+texture = ExtResource( 16 )
+offset = Vector2( -4, -1 )
+
+[node name="RightHand" type="Sprite" parent="Graphics/TorsoPivot/RotAxis"]
+use_parent_material = true
 texture = ExtResource( 7 )
 offset = Vector2( -9, -1 )
 
-[node name="BulletOrigin" type="Position2D" parent="Graphics/TorsoPivot/RotAxis/Revolver"]
+[node name="BulletOrigin" type="Position2D" parent="Graphics/TorsoPivot/RotAxis/RightHand"]
 position = Vector2( -20, -3 )
 
-[node name="Raycast" type="Area2D" parent="Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin" groups=["GunRaycast"]]
+[node name="Raycast" type="Area2D" parent="Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin" groups=["GunRaycast"]]
 visible = false
 collision_layer = 32
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin/Raycast"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin/Raycast"]
 position = Vector2( -60, 0 )
 shape = SubResource( 24 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Graphics/TorsoPivot/RotAxis"]
+anims/RELOAD = SubResource( 49 )
 anims/RESET = SubResource( 31 )
 anims/SHOOT = SubResource( 32 )
 
 [node name="Torso" type="AnimatedSprite" parent="Graphics/TorsoPivot"]
+use_parent_material = true
 frames = ExtResource( 8 )
 animation = "MIDDLE"
 playing = true
@@ -2306,6 +2043,7 @@ offset = Vector2( 1, -28 )
 
 [node name="LeftArm" type="AnimatedSprite" parent="Graphics/TorsoPivot"]
 material = SubResource( 40 )
+use_parent_material = true
 position = Vector2( 4, -13 )
 frames = ExtResource( 6 )
 animation = "MIDDLE"
@@ -2320,7 +2058,7 @@ rotation = 0.00302337
 visible = false
 position = Vector2( 0, -10 )
 frames = ExtResource( 9 )
-frame = 4
+frame = 2
 speed_scale = 0.769231
 playing = true
 offset = Vector2( 0, -5 )
@@ -2335,11 +2073,9 @@ autostart = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 method_call_mode = 1
-anims/CHECK_HEALTH = SubResource( 23 )
 anims/DASH = SubResource( 47 )
-anims/PUNCH = SubResource( 28 )
 anims/RESET = SubResource( 21 )
-anims/RUN = SubResource( 30 )
+anims/RUN = SubResource( 50 )
 anims/STAB = SubResource( 29 )
 
 [node name="SecondaryAnimationPlayer" type="AnimationPlayer" parent="."]
@@ -2347,8 +2083,10 @@ anims/CARRY = SubResource( 41 )
 anims/CHECK_HEALTH = SubResource( 33 )
 anims/PUNCH = SubResource( 35 )
 anims/RESET = SubResource( 36 )
-anims/RUN = SubResource( 37 )
 anims/STAB = SubResource( 39 )
+__meta__ = {
+"_editor_description_": "Анимирует верхнюю часть тела"
+}
 
 [node name="BGAnimationPlayer" type="AnimationPlayer" parent="."]
 method_call_mode = 1
@@ -2382,6 +2120,34 @@ one_shot = true
 [node name="Loader" parent="." instance=ExtResource( 15 )]
 visible = false
 position = Vector2( 0, -37 )
+
+[node name="ShootSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 13 )
+volume_db = -12.0
+
+[node name="ReloadSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 17 )
+volume_db = -12.0
+
+[node name="OutOfAmmoSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 18 )
+volume_db = -12.0
+
+[node name="StepSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 19 )
+volume_db = -12.0
+
+[node name="HitSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 20 )
+volume_db = -12.0
+
+[node name="GrabSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 21 )
+volume_db = -12.0
+
+[node name="DashSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 22 )
+volume_db = -12.0
 
 [connection signal="timeout" from="Camera2D/ShakeTimer" to="Camera2D" method="_on_ShakeTimer_timeout"]
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]

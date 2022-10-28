@@ -2,7 +2,11 @@ extends Stateful
 
 class_name Alive
 
+signal health_changed(health)
+signal died()
+
 var health_manager = preload("res://HealthManager.gd").new()
+
 var health: float = health_manager.health setget set_health,get_health
 
 func set_health(value: float):
@@ -10,6 +14,7 @@ func set_health(value: float):
 	
 func get_health():
 	return health_manager.health
+
 
 var is_dead: bool setget ,get_is_dead
 
@@ -31,8 +36,8 @@ func take_damage(damage: float):
 
 
 func _on_health_changed(health: float):
-	pass
+	emit_signal("health_changed", health)
 
 
 func _on_died():
-	pass
+	emit_signal("died")

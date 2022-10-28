@@ -3,7 +3,7 @@
 [ext_resource path="res://aseprite-wizard-output/goo.res" type="SpriteFrames" id=1]
 [ext_resource path="res://GameObjects/Enemies/Goo.gd" type="Script" id=2]
 [ext_resource path="res://img/shadow.png" type="Texture" id=3]
-[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Triggers/Hitbox/Hitbox.tscn" type="PackedScene" id=4]
 [ext_resource path="res://GameObjects/RayRect.tscn" type="PackedScene" id=5]
 
 [sub_resource type="CircleShape2D" id=1]

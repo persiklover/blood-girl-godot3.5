@@ -2,12 +2,12 @@
 
 [ext_resource path="res://img/tileset.png" type="Texture" id=1]
 [ext_resource path="res://shaders/CircleTransition.shader" type="Shader" id=2]
-[ext_resource path="res://GameObjects/HighRock.tscn" type="PackedScene" id=3]
+[ext_resource path="res://GameObjects/Enemies/Rat/Rat.tscn" type="PackedScene" id=3]
 [ext_resource path="res://img/table.png" type="Texture" id=4]
 [ext_resource path="res://GameObjects/Trap.tscn" type="PackedScene" id=5]
 [ext_resource path="res://GameObjects/UI/AmmoCounter.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Enemy.tscn" type="PackedScene" id=7]
 [ext_resource path="res://GameObjects/Grabbable/Branch.tscn" type="PackedScene" id=8]
+[ext_resource path="res://GUI.gd" type="Script" id=9]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=15]
 [ext_resource path="res://Crosshair.tscn" type="PackedScene" id=18]
 [ext_resource path="res://Global.gd" type="Script" id=19]
@@ -484,6 +484,28 @@ color = Color( 1, 1, 1, 1 )
 [node name="AmmoCounter" parent="ForegroundLayer/CanvasLayer" instance=ExtResource( 6 )]
 position = Vector2( 5, 14.75 )
 
+[node name="GUI" type="Control" parent="ForegroundLayer"]
+margin_left = 114.884
+margin_top = 108.372
+margin_right = 370.884
+margin_bottom = 258.372
+script = ExtResource( 9 )
+
+[node name="HealthBarBg" type="ColorRect" parent="ForegroundLayer/GUI"]
+margin_left = 42.0
+margin_top = 137.0
+margin_right = 214.0
+margin_bottom = 144.0
+rect_pivot_offset = Vector2( 86, 3 )
+color = Color( 0.270588, 0.270588, 0.270588, 0.827451 )
+
+[node name="HealthBar" type="ColorRect" parent="ForegroundLayer/GUI"]
+margin_left = 42.0
+margin_top = 137.0
+margin_right = 214.0
+margin_bottom = 144.0
+color = Color( 0.654902, 0.054902, 0.054902, 1 )
+
 [node name="Level" type="Node2D" parent="."]
 
 [node name="TileMap" type="TileMap" parent="Level" groups=["Map"]]
@@ -585,14 +607,11 @@ position = Vector2( 620, -630 )
 [node name="Branch3" parent="Level/YSort" instance=ExtResource( 8 )]
 position = Vector2( 480, -659 )
 
-[node name="HighRock" parent="Level/YSort" instance=ExtResource( 3 )]
-position = Vector2( 421, -598 )
-
-[node name="Enemy" parent="Level/YSort" instance=ExtResource( 7 )]
-position = Vector2( 538, -597 )
+[node name="Rat" parent="Level/YSort" instance=ExtResource( 3 )]
+position = Vector2( 455, -601 )
 
 [node name="Respawn" type="Position2D" parent="Level"]
-position = Vector2( 287, -598 )
+position = Vector2( 355, -601 )
 
 [node name="Crosshair" parent="." instance=ExtResource( 18 )]
 

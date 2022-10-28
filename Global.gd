@@ -42,34 +42,20 @@ func _process(_delta):
 	if is_instance_valid(camera) and is_instance_valid(player):
 		camera.global_position = player.global_position
 	
-	if FPS != null:
+	if FPS:
 		FPS.content = str( Performance.get_monitor(Performance.TIME_FPS) )
 
-	# if Input.is_action_just_pressed("ui_left"):
-	# 	viewport.size.x = viewport.size.x - 1
-	
-	# if Input.is_action_just_pressed("ui_right"):
-	# 	viewport.size.x = viewport.size.x + 1
-
-	# if Input.is_action_just_pressed("ui_up"):
-	# 	viewport.size.y = viewport.size.y + 1
-
-	# if Input.is_action_just_pressed("ui_down"):
-	# 	viewport.size.y = viewport.size.y - 1
-	
-	# print(viewport.size)
-
 func get_player() -> Player:
-	if player != null:
+	if player:
 		return player
-	
+		
 	return get_scene().find_node("Player") as Player
 
 func get_scene() -> Node:
 	return get_tree().current_scene
 
 func get_camera() -> Camera2D:
-	if camera != null:
+	if camera:
 		return camera
 	
 	return get_scene().find_node("Camera2D") as Camera2D

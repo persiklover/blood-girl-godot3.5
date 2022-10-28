@@ -2,19 +2,15 @@ extends Camera2D
 
 class_name MainCamera
 
-onready var timer = $ShakeTimer
 onready var player = Global.get_player()
+onready var timer = $ShakeTimer
 
 export var amplitude = 3.0
 
-var default_offset = offset
-
-var shake = false setget set_shake
-
+var is_shaking: bool = false setget set_shake
 func set_shake(value: bool):
-	shake = value
-	offset = default_offset
-	if shake:
+	is_shaking = value
+	if is_shaking:
 		timer.start()
 
 
@@ -22,31 +18,28 @@ func _ready():
 	randomize()
 
 
-func _process(delta):
-	offset = default_offset
+func _process(_delta):
+	var threshold = 95
+	var cursor_position = player.global_position + get_local_mouse_position() - offset
+	var target = cursor_position - player.global_position
+	target = target.limit_length(threshold)
+	var weight = 1 - (target.length() / threshold)
+	weight = clamp(weight, .1, .25)
 
-	# var threshhold = 70
-	# var cursor_position = player.global_position + get_local_mouse_position() - offset
-	# var diff = cursor_position - player.global_position
-	# diff /= 4
-	# diff.x = clamp(diff.x, -threshhold, threshhold)
-	# diff.y = clamp(diff.y, -threshhold, threshhold)
-	# offset = diff
-
-	if not shake:
-		return
+	if is_shaking:
+		var damping = ease(timer.time_left / timer.wait_time, 1.0)
+		target += Vector2(
+			rand_range(amplitude, -amplitude) * damping,
+			rand_range(amplitude, -amplitude) * damping
+		)
+		weight = 1
 	
-	var damping = ease(timer.time_left / timer.wait_time, 1.0)
-	offset += Vector2(
-		rand_range(amplitude, -amplitude) * damping,
-		rand_range(amplitude, -amplitude) * damping
-	)
-	# offset += default_offset
+	offset = lerp(offset, target, weight)
 
 
-func shake(_time = 0.225, _amplitude = 0.85):
-	amplitude  = _amplitude
-	timer.wait_time = _time
+func shake(t = 0.225, ampl = 0.85):
+	timer.wait_time = t
+	amplitude = ampl
 	set_shake(true)
 
 

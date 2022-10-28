@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/enemy-step.wav-4529a9b5a16644f6d8d9cdcff65207ae.sample"
+
+[deps]
+
+source_file="res://sounds/enemy-step.wav"
+dest_files=[ "res://.import/enemy-step.wav-4529a9b5a16644f6d8d9cdcff65207ae.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=1
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

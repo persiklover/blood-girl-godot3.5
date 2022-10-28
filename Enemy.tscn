@@ -1,8 +1,8 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=33 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/enemy01.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
-[ext_resource path="res://GameObjects/Hurtbox.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Triggers/Hitbox/Hitbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Enemy.gd" type="Script" id=4]
 [ext_resource path="res://Text.tscn" type="PackedScene" id=5]
 [ext_resource path="res://SoftCollision.tscn" type="PackedScene" id=6]
@@ -14,6 +14,9 @@
 [ext_resource path="res://GameObjects/ReinforcementsArea.tscn" type="PackedScene" id=12]
 [ext_resource path="res://img/exclamation-mark.png" type="Texture" id=13]
 [ext_resource path="res://shaders/White.shader" type="Shader" id=14]
+[ext_resource path="res://sounds/72808f35d23eab.mp3" type="AudioStream" id=15]
+[ext_resource path="res://sounds/punch.wav" type="AudioStream" id=16]
+[ext_resource path="res://sounds/enemy-step.wav" type="AudioStream" id=17]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 3.00001
@@ -398,6 +401,7 @@ shape = SubResource( 10 )
 visible = false
 position = Vector2( 0, -27 )
 frames = ExtResource( 7 )
+frame = 1
 playing = true
 
 [node name="BloodOrigin" type="Position2D" parent="."]
@@ -407,7 +411,6 @@ position = Vector2( 0, -9 )
 position = Vector2( 0, -17 )
 
 [node name="RayRect" parent="." instance=ExtResource( 10 )]
-visible = false
 
 [node name="CollisionShape2D" parent="RayRect" index="0"]
 position = Vector2( -33.5, 0 )
@@ -491,6 +494,21 @@ show_behind_parent = true
 [node name="RayCast" type="RayCast2D" parent="."]
 enabled = true
 cast_to = Vector2( -15, 0 )
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 15 )
+volume_db = -8.0
+pitch_scale = 0.4
+max_distance = 400.0
+attenuation = 1.62451
+
+[node name="HitSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 16 )
+volume_db = -12.0
+
+[node name="StepSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 17 )
+volume_db = -12.0
 
 [connection signal="body_entered" from="ReactArea" to="." method="_on_ReactArea_body_entered"]
 [connection signal="animation_finished" from="Graphics/AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]

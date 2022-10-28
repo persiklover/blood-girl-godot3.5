@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/blood-squirt-spill.mp3-c86e17193cd73e3670671150be582b22.mp3str"
+
+[deps]
+
+source_file="res://sounds/blood-squirt-spill.mp3"
+dest_files=[ "res://.import/blood-squirt-spill.mp3-c86e17193cd73e3670671150be582b22.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

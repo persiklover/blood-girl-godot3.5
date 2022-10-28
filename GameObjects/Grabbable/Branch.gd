@@ -32,6 +32,4 @@ func _on_Area2D_area_entered(area: Area2D):
 	
 	if active:
 		if area.is_in_group("EnemyHurtbox"):
-			var enemy: EnemyBase = area.get_parent()
-			enemy.take_damage(.5)
 			queue_free()

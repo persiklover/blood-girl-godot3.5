@@ -4,7 +4,7 @@ class_name Bullet
 
 var max_hits = 1
 var lifespan = 3
-var speed = 430 # 240  # 150
+var speed = 480
 var damage = .375
 
 var initiator: Node2D 

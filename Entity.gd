@@ -11,7 +11,7 @@ var movement_speed = 65
 export(bool) var facing_right = false
 
 var direction: Vector2
-var velocity : Vector2 = Vector2.ZERO
+var velocity:  Vector2 = Vector2.ZERO
 
 var can_spawn_dust = true
 

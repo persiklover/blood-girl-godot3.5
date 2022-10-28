@@ -16,12 +16,11 @@ onready var carry_point = $Graphics/TorsoPivot/LeftArm/CarryPivot
 onready var gun = $Graphics/TorsoPivot/RotAxis
 onready var gun_initial_offset = gun.position
 onready var gun_animation_player = $Graphics/TorsoPivot/RotAxis/AnimationPlayer
-onready var bullet_origin = $Graphics/TorsoPivot/RotAxis/Revolver/BulletOrigin
-onready var shell_origin = $Graphics/TorsoPivot/RotAxis/Revolver/ShellOrigin
+onready var bullet_origin = $Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin
 onready var left_arm = $Graphics/TorsoPivot/LeftArm
 
-var min_speed = 89 # 94
-var max_speed = 106
+var min_speed = 92 # 94
+var max_speed = 112
 var speed = 0
 
 export(float) var health_drop = 0.0022
@@ -115,11 +114,14 @@ func _handle_input():
 	
 	# Shooting
 	if Input.is_action_just_pressed("shoot"):
+		if ammo == 0 and not is_reloading():
+			$OutOfAmmoSFX.play()
+
 		# Do nothing if can't shoot
 		if not can_shoot():
 			return
 
-		# Do not reduce ammo if in "invfinite_ammo" mode
+		# Do not reduce ammo if "invfinite_ammo" mode is on
 		if not Global.invfinite_ammo:
 			ammo -= 1
 		
@@ -147,10 +149,10 @@ func _handle_input():
 		gun.rotation_degrees += 30
 		gun_animation_player.play("SHOOT")
 	
-		Global.get_camera().shake(0.225, 1.5)
+		Global.get_camera().shake(.225, 1.75)
 		Global.get_crosshair().play("SHOOT")
 		yield(gun_animation_player, "animation_finished")
-		_rotate_gun()
+		update_gun_rotation()
 	
 	# Checking health
 	if Input.is_action_just_pressed("check_health"):
@@ -168,8 +170,11 @@ func _handle_input():
 
 	# Reloading
 	if Input.is_action_just_pressed("reload"):
+		# Не можем перезаряжаться, если уже перезаряжаемся или полный магазин
 		if $Loader.is_playing() or ammo == 5:
 			return
+		
+		gun_animation_player.play("RELOAD")
 		
 		$Loader.start(1.35)
 		$Loader.visible = true
@@ -226,12 +231,14 @@ func _process(delta):
 		left_arm.z_index = 3
 	
 	# Чем меньше HP, тем бледнее сердце
-	$Graphics/TorsoPivot/Heart.modulate = Color(
-		min(health_manager.health + 0.3, 1),
-		health_manager.health,
-		min(health_manager.health + 0.4, 1)
-	)
-	$Graphics/TorsoPivot/Heart.speed_scale = 1 / (health_manager.health + 0.3)
+	var heart = $Graphics/TorsoPivot/Heart
+	if heart:
+		heart.modulate = Color(
+			min(health_manager.health + 0.3, 1),
+			health_manager.health,
+			min(health_manager.health + 0.4, 1)
+		)
+		heart.speed_scale = 1 / (health_manager.health + 0.3)
 	
 	# -------------
 	# State manager
@@ -260,14 +267,19 @@ func _process(delta):
 	
 	# print(State.keys()[prevState], " ", State.keys()[currentState])
 	
-	var current_animation_name = State.keys()[currentState]
-	if current_animation_name == "IDLE":
-		current_animation_name = "RESET"
-		pass
+	var preffered_animation = State.keys()[currentState]
+	match preffered_animation:
+		"IDLE":
+			# if not secondary_animation_player.is_playing():
+			# 	preffered_animation = "RESET"
+			preffered_animation = "RESET"
+			pass
+		"RUN":
+			animation_player.play("RUN")
+			pass
 	
-	
-	if (current_animation_name != animation_player.current_animation):
-		animation_player.play(current_animation_name)
+	if (preffered_animation != animation_player.current_animation):
+		animation_player.play(preffered_animation)
 	
 	# --------
 	# ПОВОРОТЫ
@@ -279,21 +291,20 @@ func _process(delta):
 		facing_right = mouse_position.x >= global_position.x
 		look_in_facing_direction(facing_right)
 	
-	# ---------------
-	# ВРАЩЕНИЕ КАМЕРЫ
-	# ---------------
+	# Rotating left arm when punching
 	if (
-		secondary_animation_player.is_playing() and 
 		secondary_animation_player.current_animation == "PUNCH" and
 		left_arm.frame == 5
 	):
-		var mouse_position = get_cursor_position()
-		left_arm.look_at(mouse_position)
+		left_arm.look_at(get_cursor_position())
 		left_arm.rotation_degrees += 180
 	
+	# ---------------
+	# ВРАЩЕНИЕ КАМЕРЫ
+	# ---------------
 	# Нельзя вращать камеру во время анимации отдачи пистолета
-	if not (gun_animation_player.is_playing() and gun_animation_player.current_animation == "SHOOT"):
-		_rotate_gun()
+	if not gun_animation_player.current_animation == "SHOOT":
+		update_gun_rotation()
 		
 		var cursor_angle = -1 * (-90 + int(gun.rotation_degrees) % 360)
 		
@@ -323,12 +334,12 @@ func _process(delta):
 					torso.play("MIDDLE")
 					gun.position = gun_offsets[0]
 
-func _rotate_gun():
+# Makes gun look at a cursor position
+func update_gun_rotation():
 	if Global.is_movement_disabled:
 		return
 	
-	var mouse_position = get_cursor_position()
-	gun.look_at(mouse_position)
+	gun.look_at(get_cursor_position())
 	gun.rotation_degrees += 180
 
 func spawn_dust():
@@ -354,6 +365,7 @@ func take_damage(damage: float, initiator: Node2D, knockback = 4.5, emit_blood =
 		return
 	
 	health_manager.health -= damage
+	$HitSFX.play()
 	
 	# Тряска экрана, чтобы усилить импакт от удара
 	Global.get_camera().shake(0.1, 0.75)
@@ -507,8 +519,6 @@ func on_punch():
 	var direction = (get_global_mouse_position() - global_position).normalized()
 	global_position += direction * 2.5
 	
-	# Global.get_camera().shake()
-	
 	var hitbox = $Graphics/TorsoPivot/RotAxis/Hitbox/CollisionShape2D
 	hitbox.disabled = false
 	yield(get_tree().create_timer(.1), "timeout")
@@ -532,11 +542,10 @@ func _on_Timer_timeout():
 	if Global.invincible:
 		return
 	
-	health_manager.health -= health_drop
+	# health_manager.health -= health_drop
 
 
 # Кто-то пiпався в хитбокс левой руки
-
 func _on_Hitbox_body_entered(body):
 	var push_force = 120
 	if body.is_in_group("Enemy"):
@@ -552,6 +561,7 @@ func _on_Hitbox_body_entered(body):
 
 
 func carry(body: Node2D):
+	$GrabSFX.play()
 	secondary_animation_player.play("CARRY")
 	grabbed_body = body
 

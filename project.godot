@@ -113,7 +113,7 @@ window/stretch/aspect="keep"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/AsepriteWizard/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/AsepriteWizard/plugin.cfg", "res://addons/imrp/plugin.cfg" )
 
 [global]
 
@@ -145,6 +145,22 @@ texture={
 "size_limit": 0,
 "stream": false,
 "svg/scale": 1.0
+}
+mp3={
+"loop": false,
+"loop_offset": 0
+}
+wav={
+"compress/mode": 0,
+"edit/loop_begin": 0,
+"edit/loop_end": -1,
+"edit/loop_mode": 1,
+"edit/normalize": false,
+"edit/trim": false,
+"force/8_bit": false,
+"force/max_rate": false,
+"force/max_rate_hz": 44100,
+"force/mono": false
 }
 
 [input]
