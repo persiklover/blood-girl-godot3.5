@@ -4,21 +4,23 @@
 [ext_resource path="res://GameObjects/WalkingAreas/Grass.gd" type="Script" id=2]
 [ext_resource path="res://aseprite-wizard-output/grass.res" type="SpriteFrames" id=3]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 2, 0.828482 )
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 1.21891
+height = 6.13629
 
-[node name="GrassArea" type="Area2D"]
+[node name="Grass" type="Area2D"]
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -2.98023e-08, -0.5 )
-scale = Vector2( 1.5, 1.81054 )
+position = Vector2( 6.77626e-21, -1 )
+rotation = 1.57079
+scale = Vector2( 1.64081, 1.52446 )
 shape = SubResource( 1 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 3 )
 animation = "IDLE"
-offset = Vector2( 0, -5 )
+offset = Vector2( 0, -8 )
 
 [node name="SFX" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 1 )

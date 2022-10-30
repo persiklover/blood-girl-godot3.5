@@ -616,7 +616,7 @@ position = Vector2( 480, -659 )
 [node name="Rat" parent="Level/YSort" instance=ExtResource( 3 )]
 position = Vector2( 455, -601 )
 
-[node name="GrassArea" parent="Level/YSort" instance=ExtResource( 10 )]
+[node name="Grass" parent="Level/YSort" instance=ExtResource( 10 )]
 position = Vector2( 393, -587 )
 scale = Vector2( 0.84, 0.933424 )
 
