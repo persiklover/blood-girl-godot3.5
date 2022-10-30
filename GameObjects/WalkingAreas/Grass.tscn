@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://sounds/grass.wav" type="AudioStream" id=1]
+[ext_resource path="res://GameObjects/WalkingAreas/Grass.gd" type="Script" id=2]
+[ext_resource path="res://aseprite-wizard-output/grass.res" type="SpriteFrames" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 36, 11.0755 )
+
+[node name="GrassArea" type="Area2D"]
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 9.53674e-07, 0.0526953 )
+scale = Vector2( 1.5, 1.81054 )
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+margin_left = -54.0
+margin_top = -20.0
+margin_right = -14.0
+margin_bottom = 20.0
+rect_scale = Vector2( 2.6826, 1.00523 )
+
+[node name="SFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 1 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="SFX"]
+frames = ExtResource( 3 )
+animation = "IDLE"
+
+[connection signal="area_entered" from="." to="." method="_on_GrassArea_area_entered"]

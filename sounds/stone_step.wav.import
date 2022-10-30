@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/stone_step.wav-b1bb4292ae2d59c6f825ca1d9b7a6ef1.sample"
+
+[deps]
+
+source_file="res://sounds/stone_step.wav"
+dest_files=[ "res://.import/stone_step.wav-b1bb4292ae2d59c6f825ca1d9b7a6ef1.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=1
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

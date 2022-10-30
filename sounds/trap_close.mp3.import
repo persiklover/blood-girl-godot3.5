@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/trap_close.mp3-278585f5b8eb4cfde3a17af6964744a8.mp3str"
+
+[deps]
+
+source_file="res://sounds/trap_close.mp3"
+dest_files=[ "res://.import/trap_close.mp3-278585f5b8eb4cfde3a17af6964744a8.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

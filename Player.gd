@@ -578,3 +578,13 @@ func _on_Hurtbox_body_entered(body: Node2D):
 		if "damage" in initiator:
 			take_damage(initiator.damage, initiator)
 		bullet.queue_free()
+
+#sounds logic
+onready var defaultStepSound = $StepSFX.stream;
+func _on_Trigger_area_entered(area: Area2D):
+	if area.is_in_group("StoneSurface"):
+		$StepSFX.stream = area.find_node("SFX").stream
+
+func _on_Trigger_area_exited(area):
+	if area.is_in_group("StoneSurface"):
+		$StepSFX.stream = defaultStepSound;

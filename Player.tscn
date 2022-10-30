@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=2]
+[gd_scene load_steps=49 format=2]
 
 [ext_resource path="res://img/shadow.png" type="Texture" id=1]
 [ext_resource path="res://aseprite-wizard-output/mc.res" type="SpriteFrames" id=2]
@@ -22,13 +22,15 @@
 [ext_resource path="res://sounds/punch.wav" type="AudioStream" id=20]
 [ext_resource path="res://sounds/grab.wav" type="AudioStream" id=21]
 [ext_resource path="res://sounds/dash.wav" type="AudioStream" id=22]
+[ext_resource path="res://sounds/wind_ambient.wav" type="AudioStream" id=23]
 
 [sub_resource type="CapsuleShape2D" id=5]
 radius = 3.5
 height = 8.0
 
-[sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 4.5, 8.5 )
+[sub_resource type="CapsuleShape2D" id=51]
+radius = 1.99999
+height = 7.0
 
 [sub_resource type="ShaderMaterial" id=48]
 
@@ -1907,7 +1909,7 @@ radius = 7.07107
 radius = 5.0
 height = 10.0
 
-[node name="Player" type="KinematicBody2D" groups=["Player"]]
+[node name="Player" type="KinematicBody2D" groups=["Player", "grass_toucher"]]
 collision_layer = 2
 collision_mask = 517
 script = ExtResource( 4 )
@@ -1957,14 +1959,12 @@ rotation = 1.57079
 shape = SubResource( 5 )
 
 [node name="Trigger" type="Area2D" parent="."]
-visible = false
-collision_layer = 3
-collision_mask = 0
+modulate = Color( 0.623529, 0.027451, 0.670588, 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Trigger"]
-position = Vector2( 0.5, -0.5 )
+position = Vector2( 0.500006, -0.999966 )
 rotation = 1.57079
-shape = SubResource( 4 )
+shape = SubResource( 51 )
 
 [node name="Shadow" type="Sprite" parent="."]
 position = Vector2( 0.851241, -0.25 )
@@ -2058,7 +2058,7 @@ rotation = 0.00302337
 visible = false
 position = Vector2( 0, -10 )
 frames = ExtResource( 9 )
-frame = 2
+frame = 4
 speed_scale = 0.769231
 playing = true
 offset = Vector2( 0, -5 )
@@ -2135,7 +2135,7 @@ volume_db = -12.0
 
 [node name="StepSFX" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 19 )
-volume_db = -12.0
+volume_db = 8.562
 
 [node name="HitSFX" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 20 )
@@ -2149,7 +2149,14 @@ volume_db = -12.0
 stream = ExtResource( 22 )
 volume_db = -12.0
 
+[node name="wind_ambient" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 23 )
+volume_db = 0.195
+autoplay = true
+
 [connection signal="timeout" from="Camera2D/ShakeTimer" to="Camera2D" method="_on_ShakeTimer_timeout"]
+[connection signal="area_entered" from="Trigger" to="." method="_on_Trigger_area_entered"]
+[connection signal="area_exited" from="Trigger" to="." method="_on_Trigger_area_exited"]
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
 [connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
 [connection signal="body_entered" from="Graphics/TorsoPivot/RotAxis/Hitbox" to="." method="_on_Hitbox_body_entered"]

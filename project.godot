@@ -98,6 +98,8 @@ Global="*res://Global.gd"
 [debug]
 
 settings/fps/force_fps=60
+shapes/collision/shape_color=Color( 1, 1, 1, 0.419608 )
+shapes/navigation/geometry_color=Color( 1, 1, 1, 0.4 )
 
 [display]
 
@@ -118,6 +120,8 @@ enabled=PoolStringArray( "res://addons/AsepriteWizard/plugin.cfg", "res://addons
 [global]
 
 window=false
+colo=false
+color=false
 
 [gui]
 
