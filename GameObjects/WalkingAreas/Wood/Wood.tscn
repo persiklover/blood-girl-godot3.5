@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://sounds/step_stone.wav" type="AudioStream" id=1]
+[ext_resource path="res://sounds/step_wood.wav" type="AudioStream" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 20, 20 )
 
-[node name="StoneArea" type="Area2D" groups=["Surface"]]
+[node name="WoodArea" type="Area2D" groups=["Surface"]]
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -14,4 +14,4 @@ shape = SubResource( 1 )
 
 [node name="SFX" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 1 )
-volume_db = -4.37
+volume_db = -17.478

@@ -582,9 +582,11 @@ func _on_Hurtbox_body_entered(body: Node2D):
 #sounds logic
 onready var defaultStepSound = $StepSFX.stream;
 func _on_Trigger_area_entered(area: Area2D):
-	if area.is_in_group("StoneSurface"):
+	if area.is_in_group("Surface"):
+		print(area, " ", area.find_node("SFX").stream)
 		$StepSFX.stream = area.find_node("SFX").stream
 
-func _on_Trigger_area_exited(area):
-	if area.is_in_group("StoneSurface"):
+func _on_Trigger_area_exited(area: Area2D):
+	if area.is_in_group("Surface"):
+		print("leave")
 		$StepSFX.stream = defaultStepSound;
