@@ -79,3 +79,8 @@ func get_pathfinder() -> Pathfinder:
 func get_grid() -> Grid:
 	var grid = get_scene().find_node("Grid")
 	return grid
+
+
+
+
+

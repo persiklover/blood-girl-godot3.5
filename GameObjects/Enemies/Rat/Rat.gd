@@ -1,6 +1,7 @@
 extends EnemyBase
 
 onready var blood_vfx = preload("res://BloodVFX2.tscn")
+#onready var player = Global.get_player()#
 
 onready var collider = $Collider
 onready var hitbox = $Hitbox
@@ -30,4 +31,6 @@ func _on_died():
 	blood.global_position = global_position
 	blood.emitting = true
 	blood.show_behind_parent = true
-	get_parent().call_deferred("add_child", blood)
+	get_parent().call_deferred("add_child", blood)\
+	
+

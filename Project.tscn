@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://img/tileset.png" type="Texture" id=1]
 [ext_resource path="res://shaders/CircleTransition.shader" type="Shader" id=2]
@@ -7,10 +7,11 @@
 [ext_resource path="res://GameObjects/Trap.tscn" type="PackedScene" id=5]
 [ext_resource path="res://GameObjects/UI/AmmoCounter.tscn" type="PackedScene" id=6]
 [ext_resource path="res://GameObjects/WalkingAreas/Stone/Stone.tscn" type="PackedScene" id=7]
-[ext_resource path="res://GameObjects/Grabbable/Branch.tscn" type="PackedScene" id=8]
+[ext_resource path="res://GameObjects/Grabbable/Branch/Branch.tscn" type="PackedScene" id=8]
 [ext_resource path="res://GUI.gd" type="Script" id=9]
 [ext_resource path="res://GameObjects/Grass/Grass.tscn" type="PackedScene" id=10]
 [ext_resource path="res://GameObjects/WalkingAreas/Wood/Wood.tscn" type="PackedScene" id=11]
+[ext_resource path="res://GameObjects/Grabbable/Rat/Rat.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=15]
 [ext_resource path="res://Crosshair.tscn" type="PackedScene" id=18]
 [ext_resource path="res://Global.gd" type="Script" id=19]
@@ -624,6 +625,15 @@ position = Vector2( 455, -601 )
 [node name="Grass" parent="Level/YSort" instance=ExtResource( 10 )]
 position = Vector2( 393, -587 )
 scale = Vector2( 0.84, 0.933424 )
+
+[node name="Grabable_Rat" parent="Level/YSort" instance=ExtResource( 12 )]
+position = Vector2( 417, -527 )
+
+[node name="Grabable_Rat2" parent="Level/YSort" instance=ExtResource( 12 )]
+position = Vector2( 418, -506 )
+
+[node name="Grabable_Rat3" parent="Level/YSort" instance=ExtResource( 12 )]
+position = Vector2( 416, -546 )
 
 [node name="Respawn" type="Position2D" parent="Level"]
 position = Vector2( 388, -527 )
