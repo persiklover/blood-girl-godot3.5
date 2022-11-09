@@ -626,14 +626,8 @@ position = Vector2( 455, -601 )
 position = Vector2( 393, -587 )
 scale = Vector2( 0.84, 0.933424 )
 
-[node name="Grabable_Rat" parent="Level/YSort" instance=ExtResource( 12 )]
-position = Vector2( 417, -527 )
-
-[node name="Grabable_Rat2" parent="Level/YSort" instance=ExtResource( 12 )]
-position = Vector2( 418, -506 )
-
-[node name="Grabable_Rat3" parent="Level/YSort" instance=ExtResource( 12 )]
-position = Vector2( 416, -546 )
+[node name="DeadRat" parent="Level/YSort" instance=ExtResource( 12 )]
+position = Vector2( 413, -549 )
 
 [node name="Respawn" type="Position2D" parent="Level"]
 position = Vector2( 388, -527 )

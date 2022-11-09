@@ -20,6 +20,12 @@ func _on_Hitbox_area_entered(area: Area2D):
 	if parent.is_in_group("PlayerBullet"):
 		# queue_free()
 		take_damage(1)
+	
+	elif parent.is_in_group("Grabbable"):
+		if parent.active:
+			# queue_free()
+			take_damage(1)
+
 
 func _on_died():
 	._on_died()
