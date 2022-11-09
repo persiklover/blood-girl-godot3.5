@@ -14,4 +14,4 @@ shape = SubResource( 1 )
 
 [node name="SFX" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 1 )
-volume_db = -17.478
+volume_db = -4.45

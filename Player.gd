@@ -579,14 +579,16 @@ func _on_Hurtbox_body_entered(body: Node2D):
 			take_damage(initiator.damage, initiator)
 		bullet.queue_free()
 
-#sounds logic
-onready var defaultStepSound = $StepSFX.stream;
+# Sounds logic
+onready var default_step_sound = $StepSFX.stream;
 func _on_Trigger_area_entered(area: Area2D):
 	if area.is_in_group("Surface"):
-		print(area, " ", area.find_node("SFX").stream)
 		$StepSFX.stream = area.find_node("SFX").stream
 
 func _on_Trigger_area_exited(area: Area2D):
 	if area.is_in_group("Surface"):
-		print("leave")
-		$StepSFX.stream = defaultStepSound;
+		for area in $Trigger.get_overlapping_areas():
+			if area.is_in_group("Surface"):
+				return
+		
+		$StepSFX.stream = default_step_sound

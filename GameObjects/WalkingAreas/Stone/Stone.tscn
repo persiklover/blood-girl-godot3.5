@@ -1,6 +1,4 @@
-[gd_scene load_steps=3 format=2]
-
-[ext_resource path="res://sounds/step_stone.wav" type="AudioStream" id=1]
+[gd_scene load_steps=2 format=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 20, 20 )
@@ -13,5 +11,4 @@ position = Vector2( 0, 2 )
 shape = SubResource( 1 )
 
 [node name="SFX" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 1 )
-volume_db = -4.37
+volume_db = -4.45

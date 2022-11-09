@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/rat.res" type="SpriteFrames" id=1]
 [ext_resource path="res://GameObjects/Enemies/Rat/Rat.gd" type="Script" id=2]
@@ -6,16 +6,24 @@
 [ext_resource path="res://GameObjects/RayRect.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Triggers/EnemyHitbox/EnemyHitbox.tscn" type="PackedScene" id=5]
 
+[sub_resource type="CapsuleShape2D" id=3]
+radius = 2.00001
+height = 5.99999
+
 [sub_resource type="RectangleShape2D" id=1]
 resource_local_to_scene = true
 extents = Vector2( 33.5, 4 )
 
 [sub_resource type="CapsuleShape2D" id=2]
-radius = 4.00001
+radius = 5.00002
 height = 8.0
 
 [node name="Rat" type="KinematicBody2D"]
 script = ExtResource( 2 )
+
+[node name="Collider" type="CollisionShape2D" parent="."]
+rotation = 1.57079
+shape = SubResource( 3 )
 
 [node name="RayRect" parent="." instance=ExtResource( 4 )]
 visible = false
@@ -34,7 +42,6 @@ frames = ExtResource( 1 )
 offset = Vector2( -3, -3 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 5 )]
-visible = false
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
 position = Vector2( -1, -3 )
