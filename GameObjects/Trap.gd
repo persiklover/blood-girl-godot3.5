@@ -18,4 +18,4 @@ func _on_Area2D_body_entered(body: Node2D):
 		return
 	
 	if body.has_method("take_damage"):
-		body.take_damage(.4, self, 0)
+		body.take_damage(1, self, "trap")

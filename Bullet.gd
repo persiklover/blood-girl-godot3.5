@@ -2,12 +2,13 @@ extends KinematicBody2D
 
 class_name Bullet
 
-var max_hits = 1
-var lifespan = 3
-var speed = 480
-var damage = .375
+export (int) var damage = 1
+export (int) var speed = 480
+export (int) var max_hits = 1
 
-var initiator: Node2D 
+var lifespan = 3
+
+var initiator: Node2D
 var direction = Vector2.ZERO
 
 var hit_number = 0 setget set_hit_number
@@ -28,6 +29,7 @@ func _ready():
 func _process(delta):
 	var collision = move_and_collide(direction * speed * delta)
 	if collision != null:
+		# amongus
 		queue_free()
 
 

@@ -2,9 +2,9 @@ extends EnemyBase
 
 tool
 
-var heart_scene = preload("res://Heart.tscn")
-var blood_scene = preload("res://Blood.tscn")
-var hit_blood_scene = preload("res://HitBlood.tscn")
+var heart_scene  = preload("res://Heart.tscn")
+var blood_vfx    = preload("res://Blood.tscn")
+var hitblood_vfx = preload("res://HitBlood.tscn")
 
 onready var sprite : AnimatedSprite = $Graphics/AnimatedSprite
 onready var animation_player = $AnimationPlayer
@@ -20,40 +20,30 @@ enum State { IDLE, RUN, HIT, DEAD }
 
 var player_inside_visibility_area = false
 var player_last_seen_position = null
-var at_gunpoint = false
+var _at_gunpoint = false
+var at_gunpoint  = false
 
-# Zigzaging
-var zigzag_time = 1.75
-var rand_start_zigzag_time: int
-var zigzag_start_time = null
-var last_finished_zigzag_time = 0
-var zigzag_allowed = true
-var zigzag_direction: int
-
-func _init():
-	attack_distance = 38
-	movement_speed  = 85 # 85
-
+const SPEED = 67.5 # 82
 
 func _ready():
-	randomize()
-	rand_start_zigzag_time = rand_range(0, 5)
-	zigzag_direction = 1 if randf() > .5 else -1 
-	
-	$Graphics.scale.x = -1 if facing_right else 1
-		
-	var look_point = global_position + (Vector2.LEFT if facing_right else Vector2.RIGHT)
-	$Vision.look_at(look_point)
+	._ready()
+
+	attack_distance = 38
+	movement_speed  = SPEED
+
+	max_health = 4
+	health = max_health
 
 
 func sees_player():
+	return true
 	return player_inside_visibility_area # and not see_player_raycast.is_colliding()
 
 
 func should_find_path():
 	return (
 		(OS.get_system_time_msecs() - last_found_path_time > 300)
-		and not can_zigzag()
+		and not should_zigzag()
 	)
 
 
@@ -61,13 +51,15 @@ func can_move():
 	return .can_move() and curr_state != State.HIT
 
 
-func can_zigzag():
-	return false
-	return (
-		not stunned and
-		curr_state != State.HIT and
-		at_gunpoint and sees_player() and
-		not Global.pacifist_mode
+func should_zigzag():
+	# Maximum confidence when player is realoading
+	if player.is_reloading():
+		return false
+	
+	return at_gunpoint and sees_player() and not (
+		Global.pacifist_mode or
+		curr_state == State.HIT or
+		stunned
 	)
 
 
@@ -112,40 +104,63 @@ func _process(delta):
 			curr_state = State.IDLE
 		else:
 			curr_state = State.RUN
+			movement_speed = SPEED
 	
 		sprite.play(State.keys()[curr_state])
 
 
-func take_damage(damage: float, initiator: Node2D = null, knockback = 110, emit_blood = true):
-	if initiator == null:
-		initiator = self
+func emit_default_blood(shoot_direction: Vector2):
+	var blood = hitblood_vfx.instance() as CPUParticles2D
+	blood.look_at(shoot_direction)
+	blood.rotation_degrees += 180
+	blood.global_position = blood_origin.global_position
+	blood.emitting = true
+	blood.show_behind_parent = true
+	get_parent().call_deferred("add_child", blood)
 
+
+func take_damage(damage: float, from: Node2D = null, type: String = "", knockback: Vector2 = Vector2.ZERO):
 	if Global.invincible_enemies:
 		damage = 0
 	
+	# TODO: questionable
 	$HitSFX.play()
 	.take_damage(damage)
-	if self.health > 0:
-		look_at_point(initiator.global_position)
 	
 	# Анимация получения урона
 	animation_player.play("GOT_DAMAGE")
 	
-	if emit_blood:
-		var blood = hit_blood_scene.instance() as CPUParticles2D
-		blood.look_at((initiator.global_position - global_position).normalized())
-		blood.rotation_degrees += 180
-		blood.global_position = blood_origin.global_position
-		blood.emitting = true
-		blood.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood)
+	match type:
+		"headshot":
+			var bullet = from
+			bullet.hit_number += 1
+			
+			if self.health > 0:
+				emit_default_blood(bullet.direction * -1)
+			else:
+				play_animation_once("DEAD_HEADSHOT")
+
+				var blood2 = preload("res://BloodFountain.tscn").instance()
+				blood2.global_position = head_blood_origin.global_position
+				blood2.show_behind_parent = true
+				get_parent().call_deferred("add_child", blood2)
+		"bullet":
+			var bullet = from
+			bullet.hit_number += 1
+			
+			var blood = blood_vfx.instance()
+			blood.look_at(bullet.direction.normalized())
+			blood.global_position = blood_origin.global_position
+			blood.position += bullet.direction.normalized() * 16
+			blood.show_behind_parent = true
+			get_parent().call_deferred("add_child", blood)
+		_:
+			emit_default_blood((from.global_position - global_position).normalized())
 	
-	if knockback != 0:
+	if knockback != Vector2.ZERO:
 		can_change_state = false
-		# Отбрасываем врага
-		var direction = (global_position - initiator.global_position).normalized()
-		velocity = direction * knockback
-		yield(get_tree().create_timer(.15), "timeout")
+		velocity = knockback
+		yield(get_tree().create_timer(.125), "timeout")
 		can_change_state = true
 
 
@@ -160,6 +175,8 @@ func attack(target: Node2D):
 	curr_state = State.HIT
 	sprite.play(State.keys()[curr_state])
 
+	movement_speed = 45
+
 
 func play_animation_once(anim: String):
 	can_change_state = false
@@ -171,71 +188,48 @@ func play_animation_once(anim: String):
 	can_change_state = true
 
 
-func _on_HeadHurtbox_area_entered(area):
-	if invincible:
-		return
-	
-	var parent: Node2D = area.get_parent()
+func _on_Hurtbox_got_damage(damage: float, from: Node2D, type: String):
+	var knockback = Vector2.ZERO
+	match type:
+		"hand":
+			type = "default"
+			knockback = (global_position - player.global_position).normalized() * 120
+		"bullet":
+			knockback = from.direction.normalized() * 75
+	take_damage(damage, from, type, knockback)
 
-	if parent.is_in_group("Grabbable"):
-		if parent.active:
-			take_damage(.5)
-	
-	elif parent.is_in_group("PlayerBullet"):
-		var bullet = area.get_parent()
-		take_damage(bullet.damage * 2.8, player, 0)
-		
-		if self.health <= 0:
-			curr_state = State.DEAD
-			sprite.play("DEAD_HEADSHOT")
-		
-		bullet.hit_number += 1
-		
-		var blood2 = preload("res://Blood2.tscn").instance()
-		blood2.global_position = head_blood_origin.global_position
-		blood2.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood2)
+
+func _on_HeadHurtbox_got_damage(damage: float, from: Node2D, type: String):
+	var knockback = Vector2.ZERO
+	match type:
+		"hand":
+			return # Do nothing, will be handled by body
+		"bullet":
+			type = "headshot"
+			knockback = from.direction.normalized() * 75
+	take_damage(damage, from, type, knockback)
 
 
 func _on_Hurtbox_area_entered(area: Area2D):
-	if invincible:
-		return
-	
-	var parent: Node2D = area.get_parent()
-
-	if parent.is_in_group("Grabbable"):
-		if parent.active:
-			take_damage(.5)
-
-	elif parent.is_in_group("Bonfire"):
-		take_damage(9999, area, 0, false)
-
-	elif parent.is_in_group("PlayerBullet"):
-		var bullet = parent
-
-		take_damage(bullet.damage, player, 3)
-		
-		bullet.hit_number += 1
-		
-		var blood = blood_scene.instance()
-		blood.look_at(bullet.direction.normalized())
-		blood.global_position = blood_origin.global_position
-		blood.position += bullet.direction.normalized() * 16
-		blood.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood)
-	
-	elif area.is_in_group("GunRaycast"):
-		at_gunpoint = true
-
-	if self.health <= 0:
-		curr_state = State.DEAD
-		play_animation_once("DEAD_BODYSHOT")
+	if area.is_in_group("GunRaycast"):
+		# Can see the gun only if didn't see it before
+		if not _at_gunpoint:
+			yield(get_tree().create_timer(rand_range(.125, 1.75)), "timeout")
+			if randf() > .5:
+				print("yes")
+				_at_gunpoint = true
+				at_gunpoint  = true
+			else:
+				print("noe")
 
 
 func _on_Hurtbox_area_exited(area):
 	if area.is_in_group("GunRaycast"):
-		at_gunpoint = false
-		cooldown_zigzag()
+		_at_gunpoint = false
+		yield(get_tree().create_timer(1), "timeout")
+		if not _at_gunpoint:
+			at_gunpoint = false
+			cooldown_zigzag()
 
 
 func _on_died():
@@ -250,15 +244,7 @@ func _on_died():
 	remove_child($HeadHurtbox)
 	remove_child(local_group_area)
 	remove_child(big_group_area)
-	
-	yield(get_tree().create_timer(.75), "timeout")
 	remove_child($Collider)
-	
-	return
-	yield(get_tree().create_timer(.5), "timeout")
-	var heart = heart_scene.instance()
-	heart.global_position = global_position + Vector2(1, 1)
-	Global.get_ysort().add_child(heart)
 
 
 func get_meeting_point(bodies: Array) -> Vector2:
@@ -280,7 +266,7 @@ func _on_Vision_area_entered(area: Area2D):
 			invincible = false
 			return
 
-	if area.is_in_group("PlayerHurtbox"):
+	if area.is_in_group("PlayerHitbox"):
 		if Global.pacifist_mode:
 			return
 		
@@ -343,7 +329,7 @@ func _on_Vision_area_entered(area: Area2D):
 
 # Lost player
 func _on_Vision_area_exited(area: Area2D):
-	if area.is_in_group("PlayerHurtbox"):
+	if area.is_in_group("PlayerHitbox"):
 		if Global.pacifist_mode:
 			return
 		
@@ -384,7 +370,8 @@ func _on_AnimatedSprite_frame_changed():
 				10:
 					var distance = global_position.distance_to(player.global_position)
 					if distance <= 35:
-							player.take_damage(damage, self, 13)
+						var knockback = (player.blood_origin.global_position - blood_origin.global_position).normalized() * 180
+						player.take_damage(damage, self, "", knockback)
 
 
 func _on_AnimatedSprite_animation_finished():
@@ -404,9 +391,9 @@ func _on_ReactArea_body_entered(body: Node2D):
 	if body == self:
 		return
 	
-	if body.is_in_group("Enemy"):
-		body.player_inside_visibility_area = true
-		pass
+#	if body.is_in_group("Enemy"):
+#		body.player_inside_visibility_area = true
+#		pass
 
 
 func cooldown_zigzag():
@@ -421,7 +408,6 @@ func _on_ZigzagAllowedTimer_timeout():
 
 func _on_ZigzagTimoutTimer_timeout():
 	zigzag_allowed = true
-	zigzag_direction = 1 if randf() > .5 else -1
 
 
 func look_at_point(look_point: Vector2):
@@ -434,25 +420,27 @@ func look_at_point(look_point: Vector2):
 	#$Direction.rotation_degrees += 180
 
 
+var zigzag_interval = 1.15
+var zigzag_offset = rand_range(0, 7)
+var zigzag_allowed = true
+
 func modify_direction(direction: Vector2):
 	# return .modify_direction(direction)
 
-	# var direction = d
-	if can_zigzag():
-		# Gives -1 or 1 after 1.5s
-		var t = sign( fposmod(rand_start_zigzag_time + OS.get_ticks_msec() / (1000 * zigzag_time), 2) -1 )
-		# var t = zigzag_direction
+	# Nothing in the way to player and can zigzag
+	if not raycast.is_colliding() and should_zigzag():
+		var t = sign( fposmod(zigzag_offset + OS.get_ticks_msec() / (1000 * zigzag_interval), 2) - 1)
 		var side_vec = (global_position - player.global_position).normalized()
 		side_vec = side_vec.rotated(deg2rad(115 * t))
 		direction = (direction + side_vec).normalized()
 		
+		# TODO: what?
 		last_found_path_time = OS.get_system_time_msecs()
 
-	
-	# if global_position.distance_to(player.global_position) < 90:
-	# 	direction = direction.rotated(deg2rad(90))
+		return direction
 
-	return $Steer.modify_direction(direction)
+	return direction
+	# return $Steer.modify_direction(direction)
 
 
 # Услышал шаги игрока

@@ -1,10 +1,9 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=32 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/enemy01.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
 [ext_resource path="res://Triggers/Hitbox/Hitbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Enemy.gd" type="Script" id=4]
-[ext_resource path="res://Text.tscn" type="PackedScene" id=5]
 [ext_resource path="res://SoftCollision.tscn" type="PackedScene" id=6]
 [ext_resource path="res://aseprite-wizard-output/stun-effect.res" type="SpriteFrames" id=7]
 [ext_resource path="res://img/question-mark.png" type="Texture" id=8]
@@ -37,11 +36,11 @@ radius = 86.0058
 
 [sub_resource type="CapsuleShape2D" id=2]
 radius = 3.0
-height = 2.0
+height = 4.0
 
 [sub_resource type="CapsuleShape2D" id=10]
-radius = 5.00002
-height = 6.0
+radius = 4.0
+height = 2.0
 
 [sub_resource type="RectangleShape2D" id=16]
 resource_local_to_scene = true
@@ -124,7 +123,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.07 ),
+"times": PoolRealArray( 0, 0.15 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
 "values": [ SubResource( 17 ), null ]
@@ -342,7 +341,7 @@ animation = "IDLE"
 playing = true
 offset = Vector2( -4, -14 )
 __meta__ = {
-"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+"_editor_description_": ""
 }
 
 [node name="HearArea" type="Area2D" parent="."]
@@ -368,28 +367,23 @@ visible = false
 visible = false
 
 [node name="Vision" type="Area2D" parent="."]
+visible = false
 modulate = Color( 1, 1, 1, 0.4 )
 rotation = 43.9823
 collision_layer = 0
-collision_mask = 1026
+collision_mask = 1034
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
 position = Vector2( -76, -8.00009 )
 shape = SubResource( 3 )
 
-[node name="Hurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 3 )]
-visible = false
-position = Vector2( 0, -1 )
-collision_layer = 8
-collision_mask = 548
+[node name="Hurtbox" parent="." instance=ExtResource( 3 )]
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
-position = Vector2( 0, -7 )
+position = Vector2( 0, -8 )
 shape = SubResource( 2 )
 
-[node name="HeadHurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 3 )]
-visible = false
-collision_layer = 8
+[node name="HeadHurtbox" parent="." instance=ExtResource( 3 )]
 collision_mask = 548
 
 [node name="CollisionShape2D" parent="HeadHurtbox" index="0"]
@@ -411,6 +405,7 @@ position = Vector2( 0, -9 )
 position = Vector2( 0, -17 )
 
 [node name="RayRect" parent="." instance=ExtResource( 10 )]
+visible = false
 
 [node name="CollisionShape2D" parent="RayRect" index="0"]
 position = Vector2( -33.5, 0 )
@@ -435,11 +430,6 @@ joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2
 
-[node name="Text" parent="." instance=ExtResource( 5 )]
-visible = false
-margin_top = -38.0
-margin_bottom = -2.0
-
 [node name="Question-mark" type="Sprite" parent="."]
 visible = false
 position = Vector2( 0, -33 )
@@ -450,20 +440,8 @@ visible = false
 position = Vector2( 0, -33 )
 texture = ExtResource( 13 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/DIE = SubResource( 9 )
-anims/GOT_DAMAGE = SubResource( 4 )
-anims/RESET = SubResource( 5 )
-anims/SPRED_ALARM_AREA = SubResource( 7 )
-
-[node name="BgAnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("../AnimationPlayer")
-anims/QUESTION = SubResource( 12 )
-anims/RESET = SubResource( 13 )
-
 [node name="HealthBar" type="Node2D" parent="."]
-visible = false
-position = Vector2( 0, -33 )
+position = Vector2( 0, -26 )
 
 [node name="Bg" type="ColorRect" parent="HealthBar"]
 margin_left = -8.0
@@ -480,6 +458,17 @@ margin_bottom = 1.0
 rect_pivot_offset = Vector2( 0, 1 )
 color = Color( 0.431373, 1, 0, 1 )
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/DIE = SubResource( 9 )
+anims/GOT_DAMAGE = SubResource( 4 )
+anims/RESET = SubResource( 5 )
+anims/SPRED_ALARM_AREA = SubResource( 7 )
+
+[node name="BgAnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../AnimationPlayer")
+anims/QUESTION = SubResource( 12 )
+anims/RESET = SubResource( 13 )
+
 [node name="ZigzagAllowedTimer" type="Timer" parent="."]
 one_shot = true
 
@@ -493,7 +482,9 @@ show_behind_parent = true
 
 [node name="RayCast" type="RayCast2D" parent="."]
 enabled = true
+exclude_parent = false
 cast_to = Vector2( -15, 0 )
+collision_mask = 513
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 15 )
@@ -518,7 +509,8 @@ volume_db = -12.0
 [connection signal="area_exited" from="Vision" to="." method="_on_Vision_area_exited"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_exited" from="Hurtbox" to="." method="_on_Hurtbox_area_exited"]
-[connection signal="area_entered" from="HeadHurtbox" to="." method="_on_HeadHurtbox_area_entered"]
+[connection signal="got_damage" from="Hurtbox" to="." method="_on_Hurtbox_got_damage"]
+[connection signal="got_damage" from="HeadHurtbox" to="." method="_on_HeadHurtbox_got_damage"]
 [connection signal="timeout" from="ZigzagAllowedTimer" to="." method="_on_ZigzagAllowedTimer_timeout"]
 [connection signal="timeout" from="ZigzagTimoutTimer" to="." method="_on_ZigzagTimoutTimer_timeout"]
 

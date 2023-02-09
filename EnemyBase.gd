@@ -6,6 +6,7 @@ onready var raycast          : RayCast2D      = $RayCast
 onready var soft_collision   : SoftCollision  = $SoftCollision
 onready var local_group_area : LocalGroupArea = $LocalGroupArea
 onready var big_group_area   : LocalGroupArea = $ReinforcementsArea
+onready var healthbar = $HealthBar
 
 onready var player = Global.get_player()
 
@@ -20,31 +21,36 @@ enum Tactics { ATTACK, PREPARE, RUN }
 var curr_tactic = Tactics.ATTACK
 
 
+func _ready():
+	._ready()
+	if healthbar:
+		healthbar.hide()
+
+
 func before_process(delta):
 	.before_process(delta)
 	
 	if not self.is_dead:
 		if Global.pacifist_mode:
 			return
-
-		if sees_player():
-			find_path(player.global_position)
+		
+		raycast.cast_to = (player.global_position - global_position)
 
 		if can_move():
+			if sees_player():
+				find_path(player.global_position)
+
 			move_towards_destination()
 			
-			if direction.length() > 0:
+			if direction.length() != 0:
 				direction = modify_direction(direction)
 
 			var distance = global_position.distance_to(player.global_position)
 			if distance <= attack_distance:
 				direction = Vector2.ZERO
-				
 				if can_attack:
 					attack(player)
 					cancel_path()
-		else:
-			direction = Vector2.ZERO
 	
 	if debugging:
 		update()
@@ -54,13 +60,12 @@ func should_find_path():
 	return OS.get_system_time_msecs() - last_found_path_time > 350
 
 
-func can_move():
-	var cannot_move = self.is_dead or stunned
-	return not cannot_move
-
-
 func sees_player():
 	return true
+
+
+func can_move():
+	return not (self.is_dead or self.stunned or not can_change_state)
 
 
 func attack(target: Node2D):
@@ -91,13 +96,14 @@ func _on_health_changed(health: float):
 	
 	var health_bar = $HealthBar/ColorRect
 	if health_bar:
+		var percent = health / max_health
 		var color = Color.green
-		if health < .66:
+		if percent < .66:
 			color = Color.orange
-		elif health < .33:
+		elif percent < .33:
 			color = Color.red
 			
-		health_bar.rect_scale.x = health
+		health_bar.rect_scale.x = percent
 		health_bar.color = color
 
 
@@ -109,14 +115,20 @@ func _on_died():
 
 func take_damage(damage: float):
 	.take_damage(damage)
+
+	var indicator = load("res://GameObjects/UI/DamageIndicator/DamageIndicator.tscn").instance()
+	var blood_origin = find_node("BloodOrigin")
+	if not blood_origin:
+		blood_origin = self
+	indicator.global_position = blood_origin.global_position - Vector2(0, 20)
+	indicator.damage = damage
+	get_parent().call_deferred("add_child", indicator)
+
 	if self.health > 0:
-		show_health_bar()
-
-
-func show_health_bar():
-	$HealthBar.visible = true
-	yield(get_tree().create_timer(1.25), "timeout")
-	$HealthBar.visible = false
+		if healthbar != null:
+			healthbar.visible = true
+			yield(get_tree().create_timer(1.25), "timeout")
+			healthbar.visible = false
 
 
 func _on_lost_player(last_seen_position: Vector2):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/hunter.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/rifle.png" type="Texture" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://GameObjects/LocalGroupArea.tscn" type="PackedScene" id=7]
 [ext_resource path="res://GameObjects/ReinforcementsArea.tscn" type="PackedScene" id=8]
 [ext_resource path="res://GameObjects/Steer/Steer.tscn" type="PackedScene" id=9]
+[ext_resource path="res://img/shadow.png" type="Texture" id=10]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 3.0
@@ -141,7 +142,7 @@ tracks/4/keys = {
 
 [sub_resource type="Animation" id=3]
 resource_name = "SHOOT"
-length = 1.25
+length = 0.6
 step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("Graphics/Rifle:position")
@@ -189,11 +190,16 @@ tracks/2/keys = {
 collision_layer = 4
 collision_mask = 519
 script = ExtResource( 3 )
+max_health = 2
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 position = Vector2( 1, 0 )
 rotation = 1.57079
 shape = SubResource( 1 )
+
+[node name="Shadow" type="Sprite" parent="."]
+position = Vector2( 1, 0 )
+texture = ExtResource( 10 )
 
 [node name="Graphics" type="Node2D" parent="."]
 
@@ -207,6 +213,7 @@ texture = ExtResource( 2 )
 offset = Vector2( -5, 0 )
 
 [node name="ShootRayRect" type="Area2D" parent="Graphics/Rifle"]
+visible = false
 position = Vector2( 0, -3 )
 collision_layer = 0
 
@@ -217,28 +224,43 @@ shape = SubResource( 7 )
 [node name="BulletOrigin" type="Position2D" parent="Graphics/Rifle"]
 position = Vector2( -16, -3 )
 
-[node name="Hurtbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 4 )]
-collision_layer = 8
-collision_mask = 548
-
-[node name="CollisionShape2D" parent="Hurtbox" index="0"]
-position = Vector2( 1, -15 )
-shape = SubResource( 4 )
+[node name="ColorRect" type="ColorRect" parent="Graphics/Rifle"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -28.5
+margin_top = -6.5
+margin_right = 6.5
+margin_bottom = -5.5
+rect_rotation = -180.0
 
 [node name="BloodOrigin" type="Position2D" parent="."]
 position = Vector2( 0, -9 )
+
+[node name="Hitbox" parent="." groups=["EnemyHurtbox"] instance=ExtResource( 4 )]
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+position = Vector2( 1, -15 )
+shape = SubResource( 4 )
 
 [node name="Vision" type="Area2D" parent="."]
 visible = false
 modulate = Color( 1, 1, 1, 0.333333 )
 collision_layer = 0
-collision_mask = 66
+collision_mask = 74
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
 position = Vector2( -99, -9.00011 )
 shape = SubResource( 6 )
 
+[node name="RayCast" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( -15, 0 )
+
 [node name="RayRect" parent="." instance=ExtResource( 6 )]
+visible = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/DIE = SubResource( 5 )
@@ -248,10 +270,6 @@ anims/SHOOT = SubResource( 3 )
 [node name="Steer" parent="." instance=ExtResource( 9 )]
 visible = false
 show_behind_parent = true
-
-[node name="RayCast" type="RayCast2D" parent="."]
-enabled = true
-cast_to = Vector2( -15, 0 )
 
 [node name="PathLine" type="Line2D" parent="."]
 width = 2.0
@@ -286,9 +304,8 @@ visible = false
 [node name="ReinforcementsArea" parent="." instance=ExtResource( 8 )]
 visible = false
 
-[connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
-[connection signal="body_entered" from="Hurtbox" to="." method="_on_Hurtbox_body_entered"]
+[connection signal="got_damage" from="Hitbox" to="." method="_on_Hitbox_got_damage"]
 [connection signal="area_entered" from="Vision" to="." method="_on_Vision_area_entered"]
 [connection signal="area_exited" from="Vision" to="." method="_on_Vision_area_exited"]
 
-[editable path="Hurtbox"]
+[editable path="Hitbox"]

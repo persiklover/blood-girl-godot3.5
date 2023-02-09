@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Blood.gd" type="Script" id=1]
-[ext_resource path="res://sounds/blood-spurt.wav" type="AudioStream" id=2]
+[ext_resource path="res://sounds/blood-spurt.wav" type="AudioStream" id=1]
+[ext_resource path="res://Blood.gd" type="Script" id=2]
 [ext_resource path="res://sounds/blood-squirt-spill.mp3" type="AudioStream" id=3]
 [ext_resource path="res://img/gunsmoke.png" type="Texture" id=4]
 
@@ -37,11 +37,11 @@ damping = 24.26
 scale_amount = 0.95
 scale_amount_random = 0.61
 scale_amount_curve = SubResource( 4 )
-color = Color( 0.788235, 0.0980392, 0.0980392, 1 )
+color = Color( 0.788235, 0.0980392, 0.0980392, 0.784314 )
 anim_speed_random = 1.0
 anim_offset = 1.0
 anim_offset_random = 1.0
-script = ExtResource( 1 )
+script = ExtResource( 2 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.55
@@ -59,7 +59,7 @@ position = Vector2( 1.90735e-06, -0.75 )
 shape = SubResource( 5 )
 
 [node name="SFX" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 2 )
+stream = ExtResource( 1 )
 autoplay = true
 
 [node name="SpillSFX" type="AudioStreamPlayer2D" parent="."]

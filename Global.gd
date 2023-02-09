@@ -1,9 +1,9 @@
 extends Node2D
 
-onready var FPS = $ForegroundLayer/CanvasLayer/FPS
+onready var fps = get_scene().find_node("FPS")
 
-const WIDTH  = 1280 # 426  # 459
-const HEIGHT = 720  # 428  # 266 # 228
+const WIDTH  = 396 # 421 # 459
+const HEIGHT = 219 # 228
 
 onready var player : Player
 onready var camera : Camera2D
@@ -25,12 +25,14 @@ func get_animation_player() -> AnimationPlayer:
 
 
 func _ready():
+	randomize()
+	
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	player = get_player()
 	camera = get_camera()
 	
-	viewport.size = Vector2(WIDTH, HEIGHT)
+	# viewport.size = Vector2(WIDTH, HEIGHT)
 	
 	VisualServer.set_default_clear_color(Color("#222034"))
 	
@@ -42,8 +44,13 @@ func _process(_delta):
 	if is_instance_valid(camera) and is_instance_valid(player):
 		camera.global_position = player.global_position
 	
-	if FPS:
-		FPS.content = str( Performance.get_monitor(Performance.TIME_FPS) )
+	if fps:
+		fps.content = str( Performance.get_monitor(Performance.TIME_FPS) )
+
+func _input(event):
+	if Input.is_action_just_pressed("fullscreen"):
+		OS.window_fullscreen = !OS.window_fullscreen
+		viewport.size = Vector2(WIDTH, HEIGHT)
 
 func get_player() -> Player:
 	if player:

@@ -1,24 +1,25 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Text.gd" type="Script" id=1]
+[ext_resource path="res://fonts/7pxMONOkeychainn.ttf" type="DynamicFontData" id=2]
 
-[sub_resource type="DynamicFontData" id=7]
-font_path = "res://fonts/prstart.ttf"
-
-[sub_resource type="DynamicFont" id=8]
-size = 8
-font_data = SubResource( 7 )
+[sub_resource type="DynamicFont" id=1]
+outline_size = 1
+outline_color = Color( 0.0627451, 0.0862745, 0.427451, 0.752941 )
+use_mipmaps = true
+font_data = ExtResource( 2 )
 
 [node name="Text" type="RichTextLabel"]
-margin_left = -87.0
-margin_top = -5.0
-margin_right = 88.0
-margin_bottom = 31.0
+margin_right = 141.0
+margin_bottom = 29.0
+rect_scale = Vector2( 0.65, 0.65 )
 custom_colors/default_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-custom_fonts/normal_font = SubResource( 8 )
+custom_fonts/normal_font = SubResource( 1 )
 bbcode_enabled = true
-bbcode_text = "[center][color=#e11414]text[/color][/center]"
-text = "text"
+bbcode_text = "[center][color=#ffe11414]0123456789[/color][/center]"
+meta_underlined = false
+text = "0123456789"
+scroll_active = false
 script = ExtResource( 1 )
-content = "text"
+content = "0123456789"
 color = Color( 0.882353, 0.0784314, 0.0784314, 1 )

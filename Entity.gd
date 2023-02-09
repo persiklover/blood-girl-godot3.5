@@ -92,6 +92,7 @@ func cancel_path():
 	destination = null
 
 
+# Resets `direction`
 func before_process(_delta):
 	direction = Vector2.ZERO
 

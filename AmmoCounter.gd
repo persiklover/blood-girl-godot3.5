@@ -1,9 +1,12 @@
 extends Node2D
 
-onready var texture = $Bullet
-var gap = 2
+tool
 
-var ammo = 5
+export(int) var ammo = 5
+
+onready var bullet = $Bullet
+
+var gap = 2
 
 func update_graphics():
 	var i = -1
@@ -16,12 +19,16 @@ func update_graphics():
 
 
 func _ready():
-	var width =  texture.texture.get_size().x
+	var width = bullet.rect_size.x
 	for i in ammo - 1:
-		var t = texture.duplicate()
-		t.position.x = (width + gap) + (width * i) + (gap * i)
+		var t = bullet.duplicate()
+		t.rect_position.x = width + gap + (width * i) + (gap * i)
 		add_child(t)
 	
+	update_graphics()
+
+
+func _process(delta):
 	update_graphics()
 
 

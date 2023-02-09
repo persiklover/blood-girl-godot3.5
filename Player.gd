@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends Alive
 
 class_name Player
 
@@ -16,11 +16,12 @@ onready var carry_point = $Graphics/TorsoPivot/LeftArm/CarryPivot
 onready var gun = $Graphics/TorsoPivot/RotAxis
 onready var gun_initial_offset = gun.position
 onready var gun_animation_player = $Graphics/TorsoPivot/RotAxis/AnimationPlayer
-onready var bullet_origin = $Graphics/TorsoPivot/RotAxis/RightHand/BulletOrigin
+onready var bullet_origin = $Graphics/TorsoPivot/RotAxis/Gun/BulletOrigin
 onready var left_arm = $Graphics/TorsoPivot/LeftArm
+onready var left_arm_initial_position = left_arm.position
 
-var min_speed = 92 # 94
-var max_speed = 112
+var min_speed = 75 # 94
+var max_speed = 90
 var speed = 0
 
 export(float) var health_drop = 0.0022
@@ -31,7 +32,6 @@ var prevState = currentState
 
 var ejected_heart = false
 var facing_right = false
-var canChangeCurrentState = true
 var canSpawnDust = true
 
 var dashing = false
@@ -53,24 +53,50 @@ var bullet_scene     = preload("res://Bullet.tscn")
 var gun_smoke_scene  = preload("res://GunSmoke.tscn")
 var hit_blood_scene  = preload("res://HitBlood.tscn")
 
+
 func _ready():
-	health_manager.health = 1
-	health_manager.connect("died", self, "_on_died")
+	._ready()
+	health = 10
+
+	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
+
+
+func _on_joy_connection_changed(device_id, connected):
+	if connected:
+		print(Input.get_joy_name(device_id))
+	else:
+		print("Keyboard")
 
 
 func _handle_input():
+	# if Input.is_action_just_released("ui_left"):
+	# 	get_viewport().size.x -= 1
+	# 	print(get_viewport().size.x)
+	# elif Input.is_action_just_released("ui_right"):
+	# 	get_viewport().size.x += 1
+	# 	print(get_viewport().size.x)
+	# if Input.is_action_just_released("ui_down"):
+	# 	get_viewport().size.y -= 1
+	# 	print(get_viewport().size.y)
+	# elif Input.is_action_just_released("ui_up"):
+	# 	get_viewport().size.y += 1
+	# 	print(get_viewport().size.y)
+	
+	# return
+
 	if Global.is_movement_disabled:
 		return
 
 	# Block inputs if dashing or stunned
 	# TODO: doesn't look good
-	if dashing or stunned:
+	if dashing or stunned or not can_change_state:
 		return
 	
 	# Controller
 	dir = Vector2.ZERO
-	dir.x = Input.get_action_strength("controller_right") - Input.get_action_strength("controller_left")
-	dir.y = Input.get_action_strength("controller_down")  - Input.get_action_strength("controller_up")
+	dir.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
+	dir.y = Input.get_action_strength("ui_down")  - Input.get_action_strength("ui_up")
+	dir = dir.normalized()
 	if dir.length() != 0:
 		Global.is_using_controller = true
 		velocity = dir
@@ -78,7 +104,6 @@ func _handle_input():
 			facing_right = dir.x >= 0
 	# Keyboard
 	else:
-		# return
 		if Input.is_action_pressed("ui_right"):
 			Global.is_using_controller = false
 			dir.x += 1
@@ -99,18 +124,15 @@ func _handle_input():
 		# Throw object if it's in the hand
 		if grabbed_body:
 			grabbed_body.active = true
-			grabbed_body.movement_speed = 320
 			grabbed_body.direction = (get_cursor_position() - grabbed_body.global_position).normalized()
 			grabbed_body = null
 
+			# TODO: Add throw animation
 			secondary_animation_player.play("RESET")
 
 		# Can't hit if already holding the heart
 		elif not ejected_heart:
 			secondary_animation_player.play("PUNCH")
-			
-			var hitbox = $Graphics/TorsoPivot/RotAxis/Hitbox
-			hitbox.find_node("CollisionShape2D").disabled = true
 	
 	# Shooting
 	if Input.is_action_just_pressed("shoot"):
@@ -151,12 +173,11 @@ func _handle_input():
 	
 		Global.get_camera().shake(.225, 1.75)
 		Global.get_crosshair().play("SHOOT")
-		yield(gun_animation_player, "animation_finished")
-		update_gun_rotation()
 	
 	# Checking health
 	if Input.is_action_just_pressed("check_health"):
-		if not (secondary_animation_player.is_playing() and secondary_animation_player.current_animation == "CHECK_HEALTH"):
+		# Can't eject heart when carrying smth
+		if not secondary_animation_player.current_animation == "CARRY":
 			if not ejected_heart:
 				secondary_animation_player.play("CHECK_HEALTH")
 			else:
@@ -185,15 +206,8 @@ func _handle_input():
 		emit_signal("shoot", ammo)
 
 
-func look_in_facing_direction(facing_right: bool):
-	# Поворот кусковой части графики
-	graphics.scale.x = -1 if facing_right else 1
-	
-	# Поворот цельной графики (AnimatedSprite)
-	$AnimatedSprite.flip_h = facing_right
-
-
 func _process(delta):
+	._process(delta)
 	_handle_input()
 	
 	if not dashing and dir.length() > 0:
@@ -211,7 +225,6 @@ func _process(delta):
 		dir = Vector2.ZERO
 		velocity = Vector2.ZERO
 	
-		
 	velocity = move_and_slide(velocity)
 	# Постепенно гасит скорость
 	if not dashing:
@@ -244,11 +257,10 @@ func _process(delta):
 	# State manager
 	# -------------
 	prevState = currentState
-	
-	if canChangeCurrentState:
+	if can_change_state:
 		if dashing:
 			currentState = State.DASH
-		elif velocity.length() > 0:
+		elif velocity.length() > 0 && not stunned:
 			currentState = State.RUN
 		else:
 			currentState = State.IDLE
@@ -270,69 +282,85 @@ func _process(delta):
 	var preffered_animation = State.keys()[currentState]
 	match preffered_animation:
 		"IDLE":
-			# if not secondary_animation_player.is_playing():
-			# 	preffered_animation = "RESET"
 			preffered_animation = "RESET"
-			pass
 		"RUN":
-			animation_player.play("RUN")
-			pass
+			preffered_animation = "RUN"
 	
-	if (preffered_animation != animation_player.current_animation):
+	if preffered_animation != animation_player.current_animation:
 		animation_player.play(preffered_animation)
 	
-	# --------
-	# ПОВОРОТЫ
-	# --------
-	
+	# Tilting body when running
+
+	# if velocity.x != 0:
+	# 	var angle = 10
+	# 	if not facing_right:
+	# 		angle *= -1
+	# 	# torso_pivot.rotation_degrees = -angle if velocity.x > 0 else angle
+	# 	torso_pivot.rotation_degrees = lerp(
+	# 		torso_pivot.rotation_degrees,
+	# 		-angle if velocity.x > 0 else angle,
+	# 		.2
+	# 	)
+	# else:
+	# 	torso_pivot.rotation_degrees = 0
+
 	# Нельзя поворачиваться, если заблокировано движение
 	if not Global.is_movement_disabled and not dashing:
 		var mouse_position = get_global_mouse_position()
 		facing_right = mouse_position.x >= global_position.x
 		look_in_facing_direction(facing_right)
 	
-	# Rotating left arm when punching
-	if (
-		secondary_animation_player.current_animation == "PUNCH" and
-		left_arm.frame == 5
-	):
+	# Left arm rotation when punching
+	if secondary_animation_player.current_animation == "PUNCH" and left_arm.frame == 5:
 		left_arm.look_at(get_cursor_position())
 		left_arm.rotation_degrees += 180
 	
-	# ---------------
-	# ВРАЩЕНИЕ КАМЕРЫ
-	# ---------------
-	# Нельзя вращать камеру во время анимации отдачи пистолета
+	# Can't aim when recoil
 	if not gun_animation_player.current_animation == "SHOOT":
 		update_gun_rotation()
 		
-		var cursor_angle = -1 * (-90 + int(gun.rotation_degrees) % 360)
+		var angle = -1 * rad2deg( blood_origin.get_angle_to(get_cursor_position()) )
+		if abs(angle) > 90:
+			angle = sign(angle) * (90 - (abs(angle) - 90))
 		
 		var gun_offsets = [
-			Vector2(-4, gun_initial_offset.y),     # MIDDLE
-			Vector2(-1, gun_initial_offset.y),     # MIDDLE-UP
-			Vector2(-1, gun_initial_offset.y + 1), # UP
-			Vector2(-6, gun_initial_offset.y + 1)  # MIDDLE-DOWN
+			Vector2(-4, gun_initial_offset.y), # MIDDLE
+			Vector2(-2, gun_initial_offset.y), # MIDDLE-UP
+			Vector2( 0, gun_initial_offset.y), # UP
+			Vector2(-6, gun_initial_offset.y)  # MIDDLE-DOWN
 		]
 
-		if secondary_animation_player.current_animation == "CARRY" or not secondary_animation_player.is_playing():
-			if cursor_angle > 0:
-				if cursor_angle < 35:
-						torso.play("UP")
-						gun.position = gun_offsets[2]
-				elif cursor_angle < 65:
+		if not secondary_animation_player.is_playing() or secondary_animation_player.current_animation == "CARRY":
+			if angle > 0:
+				if angle >= 60:
+					torso.play("UP")
+					gun.position = gun_offsets[2]
+					left_arm.position = left_arm_initial_position + Vector2(1, 2)
+				elif angle >= 25:
 					torso.play("MIDDLE-UP")
 					gun.position = gun_offsets[1]
+					left_arm.position = left_arm_initial_position + Vector2.RIGHT
 				else:
 					torso.play("MIDDLE")
 					gun.position = gun_offsets[0]
+					left_arm.position = left_arm_initial_position
 			else:
-				if cursor_angle > -270 + 35:
+				if angle <= -25:
 					torso.play("MIDDLE-DOWN")
 					gun.position = gun_offsets[3]
+					left_arm.position = left_arm_initial_position
 				else:
 					torso.play("MIDDLE")
 					gun.position = gun_offsets[0]
+					left_arm.position = left_arm_initial_position
+
+
+func look_in_facing_direction(facing_right: bool):
+	# Поворот кусковой части графики
+	graphics.scale.x = -1 if facing_right else 1
+	
+	# Поворот цельной графики (AnimatedSprite)
+	$AnimatedSprite.flip_h = facing_right
 
 # Makes gun look at a cursor position
 func update_gun_rotation():
@@ -341,6 +369,7 @@ func update_gun_rotation():
 	
 	gun.look_at(get_cursor_position())
 	gun.rotation_degrees += 180
+
 
 func spawn_dust():
 	var dust = dustScene.instance()
@@ -351,12 +380,12 @@ func spawn_dust():
 
 func play_animation_once(anim: String):
 	currentState = State[anim]
-	canChangeCurrentState = false
+	can_change_state = false
 	sprite.play(anim)
 	yield(sprite, "animation_finished")
-	canChangeCurrentState = true
+	can_change_state = true
 
-func take_damage(damage: float, initiator: Node2D, knockback = 4.5, emit_blood = true):	
+func take_damage(damage: float, from: Node2D = null, _type: String = "", knockback: Vector2 = Vector2.ZERO):
 	# Получаем в 3 раза больше урона, если достали сердце
 	if ejected_heart:
 		damage *= 3
@@ -365,26 +394,31 @@ func take_damage(damage: float, initiator: Node2D, knockback = 4.5, emit_blood =
 		return
 	
 	health_manager.health -= damage
+	# TODO: should come from damage dealer
 	$HitSFX.play()
 	
-	# Тряска экрана, чтобы усилить импакт от удара
 	Global.get_camera().shake(0.1, 0.75)
 	
-	# Анимация получения урона
+	# Cancels all active actions
+	secondary_animation_player.play("RESET")
+	# Flashing to indicate getting damage
 	$BGAnimationPlayer.play("GOT_DAMAGE")
 	
-	# Отбрасываем игрока
-	var direction = -(initiator.global_position - global_position).normalized()
-	global_position += direction * knockback
+	var blood = hit_blood_scene.instance()
+	blood.look_at((from.global_position - global_position).normalized())
+	blood.rotation_degrees += 180
+	blood.global_position = blood_origin.global_position
+	blood.emitting = true
+	blood.show_behind_parent = true
+	get_parent().call_deferred("add_child", blood)
 	
-	if emit_blood and initiator:
-		var blood = hit_blood_scene.instance()
-		blood.look_at((initiator.global_position - global_position).normalized())
-		blood.rotation_degrees += 180
-		blood.global_position = blood_origin.global_position
-		blood.emitting = true
-		blood.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood)
+	# Knockback
+	if knockback != Vector2.ZERO:
+		can_change_state = false
+		dir = Vector2.ZERO
+		velocity = knockback
+		yield(get_tree().create_timer(.175), "timeout")
+		can_change_state = true
 
 
 func stun(time: float = 1):
@@ -421,7 +455,9 @@ func respawn():
 	else:
 		print("No respawn node!")
 
+
 func _on_died():
+	._on_died()
 	respawn()
 
 func get_cursor_position() -> Vector2:
@@ -494,11 +530,6 @@ func _on_AnimatedSprite_frame_changed():
 			if frame == 5:
 				var direction = (get_global_mouse_position() - global_position).normalized()
 				global_position += direction * 16.5
-				
-				var hitbox = $Graphics/TorsoPivot/Revolver/Hitbox
-				hitbox.find_node("CollisionShape2D").disabled = false
-				yield(get_tree().create_timer(.1), "timeout")
-				hitbox.find_node("CollisionShape2D").disabled = true
 		State.EAT:
 			if frame < len(eating_offsets):
 				object_to_interact.sprite.offset.x = eating_offsets[frame].x * (1 if facing_right else -1)
@@ -546,18 +577,23 @@ func _on_Timer_timeout():
 
 
 # Кто-то пiпався в хитбокс левой руки
-func _on_Hitbox_body_entered(body):
-	var push_force = 120
-	if body.is_in_group("Enemy"):
-		# carry(body)
-		body.take_damage(.4, self, push_force)
-		if body.health > 0:
-			yield(get_tree().create_timer(.4), "timeout")
-			if body.has_method("stun"):
-				body.stun(1.15)
+# func _on_Hitbox_body_entered(body):
+# 	print("body: ", body)
+# 	if body == self:
+# 		return
+
+# 	var push_force = 120
+# 	if body.is_in_group("Enemy"):
+# 		# carry(body)
+# 		body.take_damage(.4, self, push_force)
+# 		$HitSFX.play()
+# 		if body.health > 0:
+# 			yield(get_tree().create_timer(.4), "timeout")
+# 			if body.has_method("stun"):
+# 				body.stun(1.15)
 			
-	elif body.is_in_group("Barrel"):
-		body.velocity = (body.global_position - global_position).normalized() * push_force
+# 	elif body.is_in_group("Barrel"):
+# 		body.velocity = (body.global_position - global_position).normalized() * push_force
 
 
 func carry(body: Node2D):

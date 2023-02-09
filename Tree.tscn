@@ -4,7 +4,7 @@
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 8.0
+radius = 7.0
 
 [node name="Tree" type="Sprite"]
 texture = ExtResource( 1 )

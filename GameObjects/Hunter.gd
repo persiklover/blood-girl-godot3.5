@@ -9,9 +9,10 @@ onready var shoot_rayrect = $Graphics/Rifle/ShootRayRect
 onready var gun = $Graphics/Rifle
 
 var bullet_scene = preload("res://GameObjects/EnemyBullet.tscn")
-var blood_scene  = preload("res://HitBlood.tscn")
+var hitblood_vfx = preload("res://HitBlood.tscn")
+var blood_vfx    = preload("res://Blood.tscn")
 
-const ATTACK_DISTANCE = 210
+const ATTACK_DISTANCE = 155
 
 var player_inside_visibility_area = false
 
@@ -19,21 +20,17 @@ var changing_position = false
 
 
 func sees_player():
-	return player_inside_visibility_area and not raycast.is_colliding()
-
-
-func _init():
-	self.health = 2
-	damage = 0.35
-	movement_speed = 50
+	return player_inside_visibility_area # and not raycast.is_colliding()
 
 
 func _ready():
 	._ready()
-	randomize()
+
+	damage = 0.35
+	movement_speed = 50
 
 
-func _rotate_gun():
+func rotate_gun():
 	gun.rotation = blood_origin.global_position.angle_to_point(player.blood_origin.global_position)
 	if facing_right:
 		gun.rotation_degrees = 180 - gun.rotation_degrees
@@ -42,15 +39,13 @@ func _rotate_gun():
 func recoil():
 	# Запускаем 3 пули
 	for i in [-1, 0, 1]:
-		if i == -1 or i == 1:
-			continue
+		# if i == -1 or i == 1:
+		# 	continue
 		
 		var bullet = bullet_scene.instance()
 		bullet.initiator = self
-		bullet.speed = 145
 		bullet.global_position = bullet_origin.global_position
-		bullet.direction = (player.blood_origin.global_position - bullet_origin.global_position).normalized()
-		bullet.direction = bullet.direction.rotated(deg2rad(i * 15))
+		bullet.direction = (player.blood_origin.global_position - bullet_origin.global_position).rotated(deg2rad(i * 15)).normalized()
 		bullet.rotation = bullet.direction.angle()
 		bullet.rotation_degrees += 180
 		get_parent().call_deferred("add_child", bullet)
@@ -65,12 +60,12 @@ func _process(delta):
 
 	if not self.is_dead:
 	
-		if player_inside_visibility_area:
+		if sees_player():
 			look_at_point(player.global_position)
 			
 			# Поворачиваем gun в сторону игрока
 			if $AnimationPlayer.current_animation != "SHOOT":
-				_rotate_gun()
+				rotate_gun()
 			
 			var angle_to_player = shoot_rayrect.global_position.angle_to_point(player.blood_origin.global_position)
 			var distance_to_player = shoot_rayrect.global_position.distance_to(player.blood_origin.global_position)
@@ -96,9 +91,8 @@ func _process(delta):
 	
 	# Не можем двигаться во время выстрела
 	if $AnimationPlayer.is_playing():
-		pass
-		# direction = Vector2.ZERO
-		# velocity  = Vector2.ZERO
+		direction = Vector2.ZERO
+		velocity  = Vector2.ZERO
 	
 	# Постепенно гасит скорость
 	.after_process(delta)
@@ -107,46 +101,73 @@ func _process(delta):
 	$Graphics.scale.x = -1 if facing_right else 1
 
 
-func take_damage(damage: float, initiator = null, knockback = 110, emit_blood = true):
-	if initiator == null:
-		initiator = self
+func emit_default_blood(shoot_direction: Vector2):
+	var blood = hitblood_vfx.instance() as CPUParticles2D
+	blood.look_at(shoot_direction)
+	blood.rotation_degrees += 180
+	blood.global_position = blood_origin.global_position
+	blood.emitting = true
+	blood.show_behind_parent = true
+	get_parent().call_deferred("add_child", blood)
 
+
+func take_damage(damage: float, from: Node2D = null, type: String = "", knockback: Vector2 = Vector2.ZERO):
 	if Global.invincible_enemies:
 		damage = 0
 	
+	# TODO: questionable
+	# $HitSFX.play()
 	.take_damage(damage)
 	
 	# Анимация получения урона
-	#animation_player.play("GOT_DAMAGE")
+	# animation_player.play("GOT_DAMAGE")
 	
-	if emit_blood and initiator:
-		var blood = blood_scene.instance() as CPUParticles2D
-		blood.look_at((initiator.global_position - global_position).normalized())
-		blood.rotation_degrees += 180
-		blood.global_position = blood_origin.global_position
-		blood.emitting = true
-		blood.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood)
+	match type:
+		# "headshot":
+		# 	var bullet = from
+		# 	bullet.hit_number += 1
+			
+		# 	if self.health > 0:
+		# 		emit_default_blood(bullet.direction * -1)
+		# 	else:
+		# 		play_animation_once("DEAD_HEADSHOT")
+
+		# 		var blood2 = preload("res://BloodFountain.tscn").instance()
+		# 		blood2.global_position = head_blood_origin.global_position
+		# 		blood2.show_behind_parent = true
+		# 		get_parent().call_deferred("add_child", blood2)
+		"bullet":
+			var bullet = from
+			bullet.hit_number += 1
+			
+			var blood = blood_vfx.instance()
+			blood.look_at(bullet.direction.normalized())
+			blood.global_position = blood_origin.global_position
+			blood.position += bullet.direction.normalized() * 16
+			blood.show_behind_parent = true
+			get_parent().call_deferred("add_child", blood)
+		_:
+			emit_default_blood((from.global_position - global_position).normalized())
 	
-	#self.can_change_state = false
-	# Отбрасываем врага
-	var direction = (global_position - initiator.global_position).normalized()
-	velocity = direction * knockback
-	#yield(get_tree().create_timer(.5), "timeout")
-	#self.can_change_state = true
+	if knockback != Vector2.ZERO:
+		can_change_state = false
+		velocity = knockback
+		yield(get_tree().create_timer(.125), "timeout")
+		can_change_state = true
 
 
 func attack(_target: Node2D):
 	if can_attack:
-		# cancel_path()
-		# direction = Vector2.ZERO
-		# velocity  = Vector2.ZERO
+		# var line = $Graphics/Rifle/ColorRect
+		# line.rect_size.x = bullet_origin.global_position.distance_to(player.blood_origin.global_position)
+
 		facing_right = player.global_position.x >= global_position.x
 
 		can_attack = false
 		$AnimationPlayer.play("SHOOT")
 		yield($AnimationPlayer, "animation_finished")
 
+		yield(get_tree().create_timer(1.5), "timeout")
 		can_attack = true
 		return
 
@@ -198,38 +219,12 @@ func _on_died():
 	$AnimationPlayer.play("DIE")
 	
 	yield(get_tree().create_timer(.75), "timeout")
-	remove_child($Hurtbox)
+	remove_child($Hitbox)
 	remove_child($Collider)
-
-
-func _on_Hurtbox_area_entered(area: Area2D):
-	if area.is_in_group("GunRaycast"):
-		#at_gunpoint = true
-		return
-	
-	var body = area.get_parent()
-	if body.is_in_group("PlayerBullet"):
-		take_damage(.5, player)
-		
-		var bullet = body
-		bullet.hit_number += 1
-		
-		var blood = blood_scene.instance()
-		blood.look_at(bullet.direction.normalized())
-		blood.global_position = $BloodOrigin.global_position
-		blood.position += bullet.direction.normalized() * 16
-		blood.show_behind_parent = true
-		get_parent().call_deferred("add_child", blood)
-
-
-func _on_Hurtbox_body_entered(body: Node2D):
-	#print(body)
-	pass
-
 
 # Saw player
 func _on_Vision_area_entered(area: Area2D):
-	if area.is_in_group("PlayerHurtbox"):
+	if area.is_in_group("PlayerHitbox"):
 		if Global.pacifist_mode:
 			return
 		
@@ -249,7 +244,7 @@ func _on_Vision_area_entered(area: Area2D):
 
 # Lost player
 func _on_Vision_area_exited(area: Area2D):
-	if area.is_in_group("PlayerHurtbox"):
+	if area.is_in_group("PlayerHitbox"):
 		if Global.pacifist_mode:
 			return
 		
@@ -262,3 +257,14 @@ func _on_lost_player(last_seen_position: Vector2):
 	changing_position = false
 	can_attack = true
 	._on_lost_player(last_seen_position)
+
+
+func _on_Hitbox_got_damage(damage: float, from: Node2D, type: String):
+	var knockback = Vector2.ZERO
+	match type:
+		"hand":
+			type = "default"
+			knockback = (global_position - player.global_position).normalized() * 120
+		"bullet":
+			knockback = from.direction.normalized() * 75
+	take_damage(damage, from, type, knockback)

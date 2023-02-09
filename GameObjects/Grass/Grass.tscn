@@ -4,7 +4,6 @@
 [ext_resource path="res://GameObjects/Grass/Grass.gd" type="Script" id=2]
 [ext_resource path="res://aseprite-wizard-output/grass.res" type="SpriteFrames" id=3]
 
-
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 1.21891
 height = 6.13629
