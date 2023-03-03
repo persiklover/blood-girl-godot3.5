@@ -20,6 +20,7 @@ var changing_position = false
 
 
 func sees_player():
+	return true
 	return player_inside_visibility_area # and not raycast.is_colliding()
 
 
@@ -44,12 +45,15 @@ func recoil():
 		
 		var bullet = bullet_scene.instance()
 		bullet.initiator = self
+		bullet.lifespan = 7
 		bullet.global_position = bullet_origin.global_position
-		bullet.direction = (player.blood_origin.global_position - bullet_origin.global_position).rotated(deg2rad(i * 15)).normalized()
+		var direction = (player.blood_origin.global_position - bullet_origin.global_position)
+		bullet.direction = direction.rotated(deg2rad(i * 15)).normalized()
 		bullet.rotation = bullet.direction.angle()
 		bullet.rotation_degrees += 180
 		get_parent().call_deferred("add_child", bullet)
 	
+	$ShootSFX.play()
 	gun.rotation_degrees += 30
 
 
@@ -167,6 +171,7 @@ func attack(_target: Node2D):
 		$AnimationPlayer.play("SHOOT")
 		yield($AnimationPlayer, "animation_finished")
 
+		$ReloadSFX.play()
 		yield(get_tree().create_timer(1.5), "timeout")
 		can_attack = true
 		return

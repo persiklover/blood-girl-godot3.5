@@ -20,8 +20,8 @@ onready var bullet_origin = $Graphics/TorsoPivot/RotAxis/Gun/BulletOrigin
 onready var left_arm = $Graphics/TorsoPivot/LeftArm
 onready var left_arm_initial_position = left_arm.position
 
-var min_speed = 75 # 94
-var max_speed = 90
+var min_speed = 65 # 94
+var max_speed = 85
 var speed = 0
 
 export(float) var health_drop = 0.0022
@@ -41,31 +41,22 @@ var stunned = false
 
 var grabbed_body = null
 
-var ammo = 5
+var max_ammo = 7
+var ammo = max_ammo
 signal shoot()
 
 var dir      : Vector2
 var velocity : Vector2
 
-var health_manager   = preload("res://HealthManager.gd").new()
 var dustScene        = preload("res://Dust.tscn")
 var bullet_scene     = preload("res://Bullet.tscn")
 var gun_smoke_scene  = preload("res://GunSmoke.tscn")
 var hit_blood_scene  = preload("res://HitBlood.tscn")
 
+var has_key = false
 
 func _ready():
 	._ready()
-	health = 10
-
-	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
-
-
-func _on_joy_connection_changed(device_id, connected):
-	if connected:
-		print(Input.get_joy_name(device_id))
-	else:
-		print("Keyboard")
 
 
 func _handle_input():
@@ -85,6 +76,8 @@ func _handle_input():
 	# return
 
 	if Global.is_movement_disabled:
+		dir = Vector2.ZERO
+		velocity = Vector2.ZERO
 		return
 
 	# Block inputs if dashing or stunned
@@ -135,7 +128,7 @@ func _handle_input():
 			secondary_animation_player.play("PUNCH")
 	
 	# Shooting
-	if Input.is_action_just_pressed("shoot"):
+	if Input.is_action_pressed("shoot"):
 		if ammo == 0 and not is_reloading():
 			$OutOfAmmoSFX.play()
 
@@ -152,6 +145,9 @@ func _handle_input():
 		
 		emit_signal("shoot", ammo)
 
+		# Reset gun rotation
+		update_gun_rotation()
+
 		# Creating bullet
 		var bullet = bullet_scene.instance()
 		bullet.global_position = bullet_origin.global_position
@@ -161,17 +157,17 @@ func _handle_input():
 		get_parent().call_deferred("add_child", bullet)
 		
 		# Adding gun smoke
-		# var gun_smoke = gun_smoke_scene.instance()
-		# gun_smoke.emitting = true
-		# gun_smoke.rotation = bullet.direction.angle()
-		# gun_smoke.rotation_degrees += 180
-		# bullet_origin.call_deferred("add_child", gun_smoke)
-		
+		var gun_smoke = gun_smoke_scene.instance()
+		gun_smoke.emitting = true
+		gun_smoke.rotation = bullet.direction.angle()
+		gun_smoke.rotation_degrees += 180
+		bullet_origin.call_deferred("add_child", gun_smoke)
+
 		# "Animating" gun
 		gun.rotation_degrees += 30
 		gun_animation_player.play("SHOOT")
 	
-		Global.get_camera().shake(.225, 1.75)
+		# Global.get_camera().shake(.225, 1.75)
 		Global.get_crosshair().play("SHOOT")
 	
 	# Checking health
@@ -192,23 +188,31 @@ func _handle_input():
 	# Reloading
 	if Input.is_action_just_pressed("reload"):
 		# Не можем перезаряжаться, если уже перезаряжаемся или полный магазин
-		if $Loader.is_playing() or ammo == 5:
+		if $Loader.is_playing() or ammo == max_ammo:
 			return
 		
 		gun_animation_player.play("RELOAD")
-		
-		$Loader.start(1.35)
+		$Loader.start(gun_animation_player.get_animation("RELOAD").length)
 		$Loader.visible = true
 		yield($Loader, "loaded")
 		$Loader.visible = false
 
-		ammo = 5
+		ammo = max_ammo
 		emit_signal("shoot", ammo)
 
 
 func _process(delta):
 	._process(delta)
 	_handle_input()
+
+	# TODO: delete
+	$Health.content = str(self.health)
+
+	# Нельзя поворачиваться, если заблокировано движение
+	if not Global.is_movement_disabled and not dashing:
+		var mouse_position = get_global_mouse_position()
+		facing_right = mouse_position.x >= global_position.x
+		look_in_facing_direction(facing_right)
 	
 	if not dashing and dir.length() > 0:
 		speed += 2
@@ -237,21 +241,25 @@ func _process(delta):
 		
 		body.global_position = carry_point.global_position - offset
 		body.scale.x = -1 if facing_right else 1
-		body.z_index = 2
+		# body.z_index = 1
+		# body.show_behind_parent = true
+		show_on_top = true
 
 		# Graphics
 		left_arm.rotation_degrees = 0
-		left_arm.z_index = 3
+		# left_arm.z_index = 2
+		show_on_top = true
 	
 	# Чем меньше HP, тем бледнее сердце
 	var heart = $Graphics/TorsoPivot/Heart
+	var health_percent = self.health / max_health
 	if heart:
 		heart.modulate = Color(
-			min(health_manager.health + 0.3, 1),
-			health_manager.health,
-			min(health_manager.health + 0.4, 1)
+			min(health_percent + 0.3, 1),
+			health_percent,
+			min(health_percent + 0.4, 1)
 		)
-		heart.speed_scale = 1 / (health_manager.health + 0.3)
+		heart.speed_scale = 1 / (health_percent + 0.3)
 	
 	# -------------
 	# State manager
@@ -304,6 +312,14 @@ func _process(delta):
 	# else:
 	# 	torso_pivot.rotation_degrees = 0
 
+
+	# Нельзя поворачиваться, если заблокировано движение
+	if not Global.is_movement_disabled and not dashing:
+		var mouse_position = get_global_mouse_position()
+		facing_right = mouse_position.x >= global_position.x
+		look_in_facing_direction(facing_right)
+	
+	
 	# Нельзя поворачиваться, если заблокировано движение
 	if not Global.is_movement_disabled and not dashing:
 		var mouse_position = get_global_mouse_position()
@@ -327,7 +343,7 @@ func _process(delta):
 			Vector2(-4, gun_initial_offset.y), # MIDDLE
 			Vector2(-2, gun_initial_offset.y), # MIDDLE-UP
 			Vector2( 0, gun_initial_offset.y), # UP
-			Vector2(-6, gun_initial_offset.y)  # MIDDLE-DOWN
+			Vector2(-5, gun_initial_offset.y)  # MIDDLE-DOWN
 		]
 
 		if not secondary_animation_player.is_playing() or secondary_animation_player.current_animation == "CARRY":
@@ -390,10 +406,12 @@ func take_damage(damage: float, from: Node2D = null, _type: String = "", knockba
 	if ejected_heart:
 		damage *= 3
 	
+	print(Global.invincible)
 	if Global.invincible or invincible:
 		return
 	
-	health_manager.health -= damage
+	.take_damage(damage)
+	
 	# TODO: should come from damage dealer
 	$HitSFX.play()
 	
@@ -412,6 +430,9 @@ func take_damage(damage: float, from: Node2D = null, _type: String = "", knockba
 	blood.show_behind_parent = true
 	get_parent().call_deferred("add_child", blood)
 	
+	# Experimental
+	knockback = (global_position - from.global_position).normalized() * 125
+
 	# Knockback
 	if knockback != Vector2.ZERO:
 		can_change_state = false
@@ -447,17 +468,15 @@ func recoil():
 	gun.rotation_degrees += 30
 	gun_animation_player.play("SHOOT")
 
+
 func respawn():
-	var respawn_position: Vector2 = owner.find_node("Respawn").global_position
-	if respawn_position:
-		global_position = respawn_position
-		health_manager.health = 1
-	else:
-		print("No respawn node!")
+	Global.transition_to_scene(load("res://Levels/Hub/Hub.tscn"))
+	self.health = max_health
 
 
 func _on_died():
 	._on_died()
+	print("DED!")
 	respawn()
 
 func get_cursor_position() -> Vector2:
@@ -510,6 +529,10 @@ func stop_dashing():
 	if grabbed_body:
 		grabbed_body.visible = true
 
+
+# Invincibility
+func is_invincible():
+	return Global.invincible or invincible
 
 func turn_invincibility_on():
 	invincible = true
@@ -573,7 +596,7 @@ func _on_Timer_timeout():
 	if Global.invincible:
 		return
 	
-	# health_manager.health -= health_drop
+	# health -= health_drop
 
 
 # Кто-то пiпався в хитбокс левой руки
@@ -612,7 +635,7 @@ func _on_Hurtbox_body_entered(body: Node2D):
 		var bullet = body
 		var initiator = bullet.initiator
 		if "damage" in initiator:
-			take_damage(initiator.damage, initiator)
+			take_damage(bullet.damage, initiator)
 		bullet.queue_free()
 
 # Sounds logic

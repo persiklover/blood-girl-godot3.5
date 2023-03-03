@@ -1,6 +1,9 @@
 extends Node2D
 
 func _on_Area2D_body_entered(body: Node2D):
+	if not is_instance_valid(body):
+		return
+	
 	if body.is_in_group("Bullet"):
 		return
 

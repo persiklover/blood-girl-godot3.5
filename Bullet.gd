@@ -3,7 +3,7 @@ extends KinematicBody2D
 class_name Bullet
 
 export (int) var damage = 1
-export (int) var speed = 480
+export (int) var speed = 520
 export (int) var max_hits = 1
 
 var lifespan = 3

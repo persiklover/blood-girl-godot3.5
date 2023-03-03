@@ -23,7 +23,7 @@ var player_last_seen_position = null
 var _at_gunpoint = false
 var at_gunpoint  = false
 
-const SPEED = 67.5 # 82
+const SPEED = 57.5 # 82
 
 func _ready():
 	._ready()
@@ -33,6 +33,8 @@ func _ready():
 
 	max_health = 4
 	health = max_health
+
+	animation_player.play("RESET")
 
 
 func sees_player():
@@ -105,7 +107,7 @@ func _process(delta):
 		else:
 			curr_state = State.RUN
 			movement_speed = SPEED
-	
+		
 		sprite.play(State.keys()[curr_state])
 
 
@@ -129,7 +131,7 @@ func take_damage(damage: float, from: Node2D = null, type: String = "", knockbac
 	
 	# Анимация получения урона
 	animation_player.play("GOT_DAMAGE")
-	
+
 	match type:
 		"headshot":
 			var bullet = from
@@ -196,6 +198,8 @@ func _on_Hurtbox_got_damage(damage: float, from: Node2D, type: String):
 			knockback = (global_position - player.global_position).normalized() * 120
 		"bullet":
 			knockback = from.direction.normalized() * 75
+		"grabbable":
+			knockback = from.direction.normalized() * 90
 	take_damage(damage, from, type, knockback)
 
 
@@ -207,6 +211,8 @@ func _on_HeadHurtbox_got_damage(damage: float, from: Node2D, type: String):
 		"bullet":
 			type = "headshot"
 			knockback = from.direction.normalized() * 75
+		"grabbable":
+			knockback = from.direction.normalized() * 90
 	take_damage(damage, from, type, knockback)
 
 

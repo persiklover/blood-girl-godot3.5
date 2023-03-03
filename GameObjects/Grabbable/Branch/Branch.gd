@@ -1,13 +1,13 @@
 extends KinematicBody2D
 
+onready var destroy_vfx = preload("res://GameObjects/Grabbable/Branch/BranchDestroyVFX.tscn")
 onready var player = Global.get_player()
-
 onready var grab_point = $GrabPoint
 
 var carried = false
 var active = false
 
-var damage = 1
+var damage = 2
 var movement_speed = 380
 var direction: Vector2
 
@@ -24,7 +24,14 @@ func _on_Area2D_area_entered(area: Area2D):
 
 func destroy():
 	active = false
-	# TODO: add break animation
+
+	var vfx = destroy_vfx.instance()
+	vfx.global_position = global_position
+	vfx.rotation = direction.angle()
+	vfx.emitting = true
+	vfx.show_on_top = true
+	get_parent().call_deferred("add_child", vfx)
+
 	hide()
 	$SFX.play()
 	yield($SFX, "finished")

@@ -4,7 +4,6 @@ class_name Entity
 
 onready var debugging = get_tree().debug_collisions_hint
 onready var rayrect: Area2D = $RayRect
-onready var pathfinder : Pathfinder = Global.get_pathfinder()
 onready var dust_scene = preload("res://Dust.tscn")
 
 var movement_speed = 65
@@ -75,6 +74,10 @@ func find_path(end_position: Vector2, safe_distance = 4):
 	elif should_find_path():
 		destination_safe_distance = null
 		last_found_path_time = OS.get_system_time_msecs()
+		
+		var pathfinder: Pathfinder = Global.get_pathfinder()
+		if not pathfinder or not is_instance_valid(pathfinder):
+			return
 		
 		var path = pathfinder.find_path(start_position, end_position)
 		if path != null and path.size() > 0:

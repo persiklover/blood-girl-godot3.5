@@ -1,13 +1,15 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Text.gd" type="Script" id=1]
-[ext_resource path="res://fonts/7pxMONOkeychainn.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFontData" id=2]
+resource_local_to_scene = true
+font_path = "res://fonts/7pxMONOkeychainn.ttf"
 
 [sub_resource type="DynamicFont" id=1]
-outline_size = 1
-outline_color = Color( 0.0627451, 0.0862745, 0.427451, 0.752941 )
+resource_local_to_scene = true
 use_mipmaps = true
-font_data = ExtResource( 2 )
+font_data = SubResource( 2 )
 
 [node name="Text" type="RichTextLabel"]
 margin_right = 141.0

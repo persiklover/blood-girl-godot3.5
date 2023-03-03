@@ -24,7 +24,7 @@ step = 0.01
 [node name="EnemyBullet" type="KinematicBody2D" groups=["Bullet", "EnemyBullet"]]
 collision_layer = 1024
 script = ExtResource( 3 )
-speed = 90
+speed = 72
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0.5, 0.5 )

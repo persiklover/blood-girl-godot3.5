@@ -3,7 +3,7 @@ extends Node2D
 onready var fps = get_scene().find_node("FPS")
 
 const WIDTH  = 396 # 421 # 459
-const HEIGHT = 219 # 228
+const HEIGHT = 228 # 219 # 228
 
 onready var player : Player
 onready var camera : Camera2D
@@ -13,7 +13,7 @@ onready var viewport : Viewport = get_viewport()
 var is_movement_disabled = false
 var is_using_controller  = false
 var pacifist_mode        = false
-var invincible           = false
+var invincible           = true
 var invfinite_ammo       = false
 var invincible_enemies   = false
 var current_interactive_area : Area2D
@@ -32,7 +32,7 @@ func _ready():
 	player = get_player()
 	camera = get_camera()
 	
-	# viewport.size = Vector2(WIDTH, HEIGHT)
+	viewport.size = Vector2(WIDTH, HEIGHT)
 	
 	VisualServer.set_default_clear_color(Color("#222034"))
 	
@@ -72,22 +72,52 @@ func get_crosshair() -> Node2D:
 	return crosshair
 
 func get_cutscene() -> AnimationPlayer:
-	var anim_player = get_scene().find_node("Cutscenes")
-	return anim_player
+	return get_scene().find_node("Cutscenes") as AnimationPlayer
 
 func get_ysort() -> YSort:
-	var node = get_scene().find_node("YSort")
-	return node
+	return get_scene().find_node("YSort") as YSort
 
 func get_pathfinder() -> Pathfinder:
-	var pathfinder = get_scene().find_node("Pathfinder")
+	var pathfinder = get_scene().find_node("Pathfinder", true, false)
 	return pathfinder
 
 func get_grid() -> Grid:
 	var grid = get_scene().find_node("Grid")
 	return grid
 
+func load_scene(scene: PackedScene):
+	var world = Global.get_scene()
+	var level = world.find_node("Level") as Node2D
+	level.name = 'your_mom'
+	level.find_node("YSort").remove_child(player)
+	level.queue_free()
+	
+	var next_scene = scene.instance()
+	next_scene.name = "Level"
+	var y_sort = next_scene.find_node("YSort")
+	y_sort.add_child(player)
+	var respawn = next_scene.find_node("Respawn") as Position2D
+	player.global_position = respawn.global_position
+	world.add_child(next_scene, true)
+	next_scene.owner = world
 
 
+func transition_to_scene(scene: PackedScene):
+	is_movement_disabled = true
+	pacifist_mode = true
+	invincible = true
 
+	var animation_player = Global.get_animation_player()
+	animation_player.play("SCENE_TRANSITION_IN")
+	yield(animation_player, "animation_finished")
+	
+	Global.load_scene(scene)
+	
+	is_movement_disabled = false
+	invincible = false
+
+	animation_player.play("SCENE_TRANSITION_OUT")
+	yield(animation_player, "animation_finished")
+
+	pacifist_mode = false
 

@@ -10,7 +10,7 @@ onready var healthbar = $HealthBar
 
 onready var player = Global.get_player()
 
-var damage = .185
+export (int) var damage = 1
 var attack_distance = 29
 
 var can_attack = true
@@ -29,6 +29,9 @@ func _ready():
 
 func before_process(delta):
 	.before_process(delta)
+
+	if self.is_dead and velocity == Vector2.ZERO:
+		modulate = Color(.75, .75, .75)
 	
 	if not self.is_dead:
 		if Global.pacifist_mode:

@@ -2,7 +2,7 @@ extends Camera2D
 
 class_name MainCamera
 
-onready var player = Global.get_player()
+var player: Player
 onready var timer = $ShakeTimer
 
 export var amplitude = 3.0
@@ -15,19 +15,21 @@ func set_shake(value: bool):
 
 
 func _ready():
+	print("init camera")
+	player = get_parent()
 	randomize()
 
 
 func _process(_delta):
-	# if Global.is_using_controller:
-
-
-	var threshold = 45
+	return
+	
+	var threshold = 50
 	var cursor_position = player.global_position + get_local_mouse_position() - offset
 	var target = cursor_position - player.global_position
 	target = target.limit_length(threshold)
-	var weight = 1 - (target.length() / threshold)
-	weight = clamp(weight, .15, .35)
+	var weight = 1
+	# var weight = 1 - (target.length() / threshold)
+	# weight = clamp(weight, .075, .25)
 
 	if is_shaking:
 		var damping = ease(timer.time_left / timer.wait_time, 1.0)

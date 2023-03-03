@@ -6,4 +6,5 @@ func _on_ReactArea_body_entered(body: Node2D):
 		return
 	
 	if body.is_in_group("Enemy"):
+		return
 		body.player_inside_visibility_area = true

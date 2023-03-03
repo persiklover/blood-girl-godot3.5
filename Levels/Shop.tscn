@@ -240,7 +240,7 @@ tile_data = PoolIntArray( -327675, 10, 0, -327674, 10, 0, -327673, 10, 0, -32767
 
 [node name="TheEntity" parent="YSort" instance=ExtResource( 3 )]
 position = Vector2( 223, -82 )
-frame = 4
+frame = 5
 
 [node name="Respawn" type="Position2D" parent="YSort"]
 

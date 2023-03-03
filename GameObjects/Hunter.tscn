@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/hunter.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/rifle.png" type="Texture" id=2]
@@ -10,6 +10,8 @@
 [ext_resource path="res://GameObjects/ReinforcementsArea.tscn" type="PackedScene" id=8]
 [ext_resource path="res://GameObjects/Steer/Steer.tscn" type="PackedScene" id=9]
 [ext_resource path="res://img/shadow.png" type="Texture" id=10]
+[ext_resource path="res://Levels/shotgun.mp3" type="AudioStream" id=11]
+[ext_resource path="res://Levels/shotgun-reload.mp3" type="AudioStream" id=12]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 3.0
@@ -20,8 +22,8 @@ resource_local_to_scene = true
 extents = Vector2( 118.5, 12.1875 )
 
 [sub_resource type="CapsuleShape2D" id=4]
-radius = 5.0
-height = 10.0
+radius = 6.0
+height = 12.0
 
 [sub_resource type="CircleShape2D" id=6]
 radius = 110.005
@@ -303,6 +305,12 @@ visible = false
 
 [node name="ReinforcementsArea" parent="." instance=ExtResource( 8 )]
 visible = false
+
+[node name="ShootSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+
+[node name="ReloadSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )
 
 [connection signal="got_damage" from="Hitbox" to="." method="_on_Hitbox_got_damage"]
 [connection signal="area_entered" from="Vision" to="." method="_on_Vision_area_entered"]

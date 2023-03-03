@@ -2,7 +2,7 @@ extends Node2D
 
 tool
 
-export(int) var ammo = 5
+export (int) var ammo = 5
 
 onready var bullet = $Bullet
 
@@ -19,6 +19,9 @@ func update_graphics():
 
 
 func _ready():
+	var player = Global.get_player()
+	ammo = player.ammo
+	
 	var width = bullet.rect_size.x
 	for i in ammo - 1:
 		var t = bullet.duplicate()

@@ -1,0 +1,15 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type canvas_item;
+
+uniform sampler2D dither_texture;
+uniform float scale: hint_range(0.1, 10) = 4.0;
+
+void fragment() {
+	vec4 color = texture(TEXTURE, UV);
+	if (color == vec4(0, 1, 0, 1)) {
+		color = texture(dither_texture, (UV / TEXTURE_PIXEL_SIZE) / scale);
+	}
+	COLOR = color;
+}"

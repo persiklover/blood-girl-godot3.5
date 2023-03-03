@@ -37,7 +37,7 @@ func _process(delta):
 	var elapsed = OS.get_ticks_msec() - start_heal_time
 	if player_stands_on and player.ejected_heart and elapsed > heal_interval:
 		start_heal_time = OS.get_ticks_msec()
-		player.health_manager.health += heal_power * freshness
+		player.health += heal_power * freshness
 		
 		var heal_particle = heal_particle_scene.instance()
 		heal_particle.global_position = player.global_position
