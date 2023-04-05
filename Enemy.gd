@@ -31,9 +31,6 @@ func _ready():
 	attack_distance = 38
 	movement_speed  = SPEED
 
-	max_health = 4
-	health = max_health
-
 	animation_player.play("RESET")
 
 

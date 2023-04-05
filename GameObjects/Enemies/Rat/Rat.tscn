@@ -87,9 +87,10 @@ scale = Vector2( 1.1405, 0.9375 )
 texture = ExtResource( 3 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+position = Vector2( -1, 0 )
 frames = ExtResource( 1 )
 animation = "IDLE"
-offset = Vector2( -3, -3 )
+offset = Vector2( -2, -3 )
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 process_priority = 2

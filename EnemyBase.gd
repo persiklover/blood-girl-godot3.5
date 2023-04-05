@@ -32,7 +32,7 @@ func before_process(delta):
 
 	if self.is_dead and velocity == Vector2.ZERO:
 		modulate = Color(.75, .75, .75)
-	
+
 	if not self.is_dead:
 		if Global.pacifist_mode:
 			return
@@ -119,13 +119,14 @@ func _on_died():
 func take_damage(damage: float):
 	.take_damage(damage)
 
-	var indicator = load("res://GameObjects/UI/DamageIndicator/DamageIndicator.tscn").instance()
-	var blood_origin = find_node("BloodOrigin")
-	if not blood_origin:
-		blood_origin = self
-	indicator.global_position = blood_origin.global_position - Vector2(0, 20)
-	indicator.damage = damage
-	get_parent().call_deferred("add_child", indicator)
+	if false:
+		var indicator = load("res://GameObjects/UI/DamageIndicator/DamageIndicator.tscn").instance()
+		var blood_origin = find_node("BloodOrigin")
+		if not blood_origin:
+			blood_origin = self
+		indicator.global_position = blood_origin.global_position - Vector2(0, 20)
+		indicator.damage = damage
+		get_parent().call_deferred("add_child", indicator)
 
 	if self.health > 0:
 		if healthbar != null:

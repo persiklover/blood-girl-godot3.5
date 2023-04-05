@@ -1,7 +1,16 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Text.tscn" type="PackedScene" id=1]
 [ext_resource path="res://GameObjects/UI/DamageIndicator/DamageIndicator.gd" type="Script" id=2]
+
+[sub_resource type="DynamicFontData" id=2]
+resource_local_to_scene = true
+font_path = "res://fonts/7pxMONOkeychainn.ttf"
+
+[sub_resource type="DynamicFont" id=3]
+resource_local_to_scene = true
+use_mipmaps = true
+font_data = SubResource( 2 )
 
 [sub_resource type="Animation" id=1]
 resource_name = "DEFAULT"
@@ -16,20 +25,38 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector2( -70, -12.6667 ), Vector2( -70, -24 ) ]
+"values": [ Vector2( -37, -13 ), Vector2( -37, -25 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Text:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -37, -13 ) ]
 }
 
 [node name="DamageIndicator" type="Position2D"]
 script = ExtResource( 2 )
 
 [node name="Text" parent="." instance=ExtResource( 1 )]
-margin_left = -70.0
-margin_top = -12.6667
-margin_right = 71.0
-margin_bottom = 16.3333
-rect_scale = Vector2( 1, 1 )
+margin_left = -37.0
+margin_top = -13.0
+margin_right = 37.0
+margin_bottom = 0.0
+rect_scale = Vector2( 1.5, 1.5 )
+rect_pivot_offset = Vector2( 37, 13 )
+custom_fonts/normal_font = SubResource( 3 )
 bbcode_text = "[center][color=#ffffffff]0123456789[/color][/center]"
 color = Color( 1, 1, 1, 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/DEFAULT = SubResource( 1 )
+anims/RESET = SubResource( 4 )

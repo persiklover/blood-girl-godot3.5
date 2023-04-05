@@ -19,7 +19,7 @@
 [ext_resource path="res://img/table.png" type="Texture" id=17]
 [ext_resource path="res://Effects/Cloud.tscn" type="PackedScene" id=18]
 [ext_resource path="res://GameObjects/Key.tscn" type="PackedScene" id=19]
-[ext_resource path="res://Enemy.tscn" type="PackedScene" id=20]
+[ext_resource path="res://GameObjects/Enemies/Rat/Rat.tscn" type="PackedScene" id=20]
 
 [sub_resource type="ConvexPolygonShape2D" id=24]
 points = PoolVector2Array( 26, 26, 0, 26, 0, 0, 26, 0 )
@@ -341,36 +341,33 @@ position = Vector2( 620, -686 )
 [node name="Trap4" parent="YSort" index="12" instance=ExtResource( 13 )]
 position = Vector2( 343, -539 )
 
-[node name="Trap5" parent="YSort" index="13" instance=ExtResource( 13 )]
-position = Vector2( 560, -588 )
-
-[node name="Trap6" parent="YSort" index="14" instance=ExtResource( 13 )]
+[node name="Trap6" parent="YSort" index="13" instance=ExtResource( 13 )]
 position = Vector2( 736, -484 )
 
-[node name="Branch" parent="YSort" index="15" instance=ExtResource( 9 )]
+[node name="Branch" parent="YSort" index="14" instance=ExtResource( 9 )]
 position = Vector2( 328, -664 )
 
-[node name="Branch2" parent="YSort" index="16" instance=ExtResource( 9 )]
+[node name="Branch2" parent="YSort" index="15" instance=ExtResource( 9 )]
 position = Vector2( 620, -630 )
 
-[node name="Branch4" parent="YSort" index="17" instance=ExtResource( 9 )]
+[node name="Branch4" parent="YSort" index="16" instance=ExtResource( 9 )]
 position = Vector2( 488, -604 )
 
-[node name="Grass" parent="YSort" index="18" instance=ExtResource( 14 )]
+[node name="Grass" parent="YSort" index="17" instance=ExtResource( 14 )]
 position = Vector2( 393, -587 )
 scale = Vector2( 0.84, 0.933424 )
 
-[node name="Rat" parent="YSort" index="19" instance=ExtResource( 4 )]
+[node name="Rat" parent="YSort" index="18" instance=ExtResource( 4 )]
 position = Vector2( 413, -571 )
 
-[node name="Fog" parent="YSort" index="20" instance=ExtResource( 18 )]
-position = Vector2( 576, -500 )
+[node name="Fog" parent="YSort" index="19" instance=ExtResource( 18 )]
+position = Vector2( 568, -503 )
 
-[node name="Key" parent="YSort" index="21" instance=ExtResource( 19 )]
+[node name="Key" parent="YSort" index="20" instance=ExtResource( 19 )]
 position = Vector2( 518, -707 )
 
-[node name="Enemy" parent="YSort" index="22" instance=ExtResource( 20 )]
-position = Vector2( 678, -630 )
+[node name="Rat2" parent="YSort" index="21" instance=ExtResource( 20 )]
+position = Vector2( 544, -648 )
 
 [connection signal="unlocked" from="YSort/Door/Lock" to="YSort/Door" method="_on_Lock_unlocked"]
 

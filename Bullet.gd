@@ -19,7 +19,7 @@ func set_hit_number(value: int):
 
 
 func _ready():
-	$AnimationPlayer.play("START")
+	$AnimationPlayer.play("DEFAULT")
 	
 	# Убиваем пулю, если кончился срок ее жизни
 	yield(get_tree().create_timer(lifespan), "timeout")

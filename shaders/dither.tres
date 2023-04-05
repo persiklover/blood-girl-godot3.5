@@ -8,8 +8,9 @@ uniform float scale: hint_range(0.1, 10) = 4.0;
 
 void fragment() {
 	vec4 color = texture(TEXTURE, UV);
-	if (color == vec4(0, 1, 0, 1)) {
+	if (color.a != 0.0) {
 		color = texture(dither_texture, (UV / TEXTURE_PIXEL_SIZE) / scale);
+		COLOR = color;
 	}
-	COLOR = color;
+	else discard;
 }"

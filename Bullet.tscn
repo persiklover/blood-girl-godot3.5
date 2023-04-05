@@ -17,10 +17,10 @@ collision_layer = 1024
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0.5, -0.6 )
-scale = Vector2( 1.25, 1.25 )
+position = Vector2( -0.766, 0.959 )
+scale = Vector2( 1.65, 1.65 )
 texture = ExtResource( 1 )
-offset = Vector2( 0, 0.5 )
+offset = Vector2( 0.958333, 0.361008 )
 
 [node name="Collider" type="CollisionShape2D" parent="."]
 rotation = 1.57079

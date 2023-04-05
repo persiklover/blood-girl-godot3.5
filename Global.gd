@@ -12,7 +12,7 @@ onready var viewport : Viewport = get_viewport()
 
 var is_movement_disabled = false
 var is_using_controller  = false
-var pacifist_mode        = false
+var pacifist_mode        = true
 var invincible           = true
 var invfinite_ammo       = false
 var invincible_enemies   = false
@@ -119,5 +119,5 @@ func transition_to_scene(scene: PackedScene):
 	animation_player.play("SCENE_TRANSITION_OUT")
 	yield(animation_player, "animation_finished")
 
-	pacifist_mode = false
+	# pacifist_mode = false
 

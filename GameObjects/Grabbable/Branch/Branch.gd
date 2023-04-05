@@ -7,7 +7,7 @@ onready var grab_point = $GrabPoint
 var carried = false
 var active = false
 
-var damage = 2
+var damage = 1
 var movement_speed = 380
 var direction: Vector2
 

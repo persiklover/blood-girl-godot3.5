@@ -7,6 +7,9 @@ onready var dead_body_scene = preload("res://GameObjects/Grabbable/Rat/Rat.tscn"
 onready var blood_origin = $BloodOrigin
 onready var animation_player = $AnimationPlayer
 
+enum STATES { IDLE, CHASE }
+var state = STATES.IDLE
+
 func _ready():
 	._ready()
 
@@ -24,8 +27,6 @@ func _process(delta):
 	.after_process(delta)
 
 	if health <= 0 and velocity == Vector2.ZERO:
-		print("!!!")
-		
 		var dead_body = dead_body_scene.instance()
 		dead_body.global_position = global_position
 		get_parent().call_deferred("add_child", dead_body)
