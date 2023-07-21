@@ -6,8 +6,6 @@ export (int) var damage = 1
 export (int) var speed = 520
 export (int) var max_hits = 1
 
-var lifespan = 3
-
 var initiator: Node2D
 var direction = Vector2.ZERO
 
@@ -20,11 +18,7 @@ func set_hit_number(value: int):
 
 func _ready():
 	$AnimationPlayer.play("DEFAULT")
-	
-	# Убиваем пулю, если кончился срок ее жизни
-	yield(get_tree().create_timer(lifespan), "timeout")
-	if is_instance_valid(self):
-		queue_free()
+
 
 func _process(delta):
 	var collision = move_and_collide(direction * speed * delta)
@@ -33,3 +27,6 @@ func _process(delta):
 		queue_free()
 
 
+func _on_Lifespan_timeout():
+	# Убиваем пулю, если кончился срок ее жизни
+	queue_free()

@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/spikes.res" type="SpriteFrames" id=1]
+[ext_resource path="res://GameObjects/Spikes/Spikes.gd" type="Script" id=2]
+[ext_resource path="res://GameObjects/Hitbox.tscn" type="PackedScene" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 7.5, 7.5 )
+
+[node name="Spikes" type="Node2D" groups=["Spikes"]]
+script = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+frames = ExtResource( 1 )
+offset = Vector2( 1, 0 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.5
+autostart = true
+
+[node name="Hitbox" parent="." instance=ExtResource( 3 )]
+collision_layer = 1
+collision_mask = 13
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+position = Vector2( 0.5, 0.5 )
+shape = SubResource( 1 )
+disabled = true
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
+
+[connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_animation_finished"]
+[connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_frame_changed"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="body_entered" from="Hitbox" to="." method="_on_Hitbox_body_entered"]
+
+[editable path="Hitbox"]

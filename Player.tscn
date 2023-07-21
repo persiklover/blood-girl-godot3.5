@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=2]
+[gd_scene load_steps=50 format=2]
 
 [ext_resource path="res://img/shadow.png" type="Texture" id=1]
 [ext_resource path="res://aseprite-wizard-output/mc.res" type="SpriteFrames" id=2]
@@ -9,7 +9,6 @@
 [ext_resource path="res://img/hand.r.png" type="Texture" id=7]
 [ext_resource path="res://aseprite-wizard-output/torso.res" type="SpriteFrames" id=8]
 [ext_resource path="res://aseprite-wizard-output/heart.res" type="SpriteFrames" id=9]
-[ext_resource path="res://shaders/Outline.shader" type="Shader" id=10]
 [ext_resource path="res://Triggers/Hitbox/Hitbox.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Camera.gd" type="Script" id=12]
 [ext_resource path="res://sounds/GunShotSnglShotEx PE1097508.mp3" type="AudioStream" id=13]
@@ -33,8 +32,6 @@ height = 8.0
 [sub_resource type="CapsuleShape2D" id=51]
 radius = 1.99999
 height = 7.0
-
-[sub_resource type="ShaderMaterial" id=52]
 
 [sub_resource type="Shader" id=18]
 
@@ -155,14 +152,6 @@ tracks/1/keys = {
 "method": "update_gun_rotation"
 } ]
 }
-
-[sub_resource type="ShaderMaterial" id=40]
-shader = ExtResource( 10 )
-shader_param/color = Color( 1, 1, 1, 1 )
-shader_param/width = 1.0
-shader_param/pattern = 0
-shader_param/inside = false
-shader_param/add_margins = true
 
 [sub_resource type="Animation" id=47]
 resource_name = "DASH"
@@ -1901,7 +1890,7 @@ tracks/23/keys = {
 radius = 7.07107
 
 [sub_resource type="CapsuleShape2D" id=42]
-radius = 5.0
+radius = 4.0
 height = 12.0
 
 [sub_resource type="DynamicFontData" id=53]
@@ -1925,7 +1914,6 @@ z_index = 4096
 offset = Vector2( 0, -20 )
 current = true
 zoom = Vector2( 0.375, 0.375 )
-smoothing_enabled = true
 smoothing_speed = 8.0
 script = ExtResource( 12 )
 
@@ -1984,7 +1972,6 @@ frame = 1
 offset = Vector2( 1, -28 )
 
 [node name="Graphics" type="Node2D" parent="."]
-material = SubResource( 52 )
 
 [node name="TorsoPivot" type="Node2D" parent="Graphics"]
 use_parent_material = true
@@ -2006,7 +1993,6 @@ shape = SubResource( 26 )
 disabled = true
 
 [node name="Gun" type="Sprite" parent="Graphics/TorsoPivot/RotAxis"]
-use_parent_material = true
 position = Vector2( -10.9375, -1 )
 scale = Vector2( 1.35, 1 )
 texture = ExtResource( 16 )
@@ -2026,7 +2012,6 @@ position = Vector2( -60, 0 )
 shape = SubResource( 24 )
 
 [node name="RightHand" type="Sprite" parent="Graphics/TorsoPivot/RotAxis"]
-use_parent_material = true
 texture = ExtResource( 7 )
 offset = Vector2( -9, -1 )
 
@@ -2036,7 +2021,6 @@ anims/RESET = SubResource( 31 )
 anims/SHOOT = SubResource( 32 )
 
 [node name="Torso" type="AnimatedSprite" parent="Graphics/TorsoPivot"]
-use_parent_material = true
 frames = ExtResource( 8 )
 animation = "MIDDLE"
 playing = true
@@ -2049,8 +2033,6 @@ texture = ExtResource( 25 )
 offset = Vector2( 1, -1 )
 
 [node name="LeftArm" type="AnimatedSprite" parent="Graphics/TorsoPivot"]
-material = SubResource( 40 )
-use_parent_material = true
 position = Vector2( 4, -13 )
 frames = ExtResource( 6 )
 animation = "MIDDLE"
@@ -2065,16 +2047,26 @@ rotation = 0.00302337
 visible = false
 position = Vector2( 0, -10 )
 frames = ExtResource( 9 )
-frame = 5
+frame = 2
 speed_scale = 0.769231
 playing = true
 offset = Vector2( 0, -5 )
 
 [node name="Legs" type="AnimatedSprite" parent="Graphics"]
-use_parent_material = true
 frames = ExtResource( 3 )
 animation = "IDLE"
 offset = Vector2( 1, -28 )
+__meta__ = {
+"_aseprite_wizard_config_": {
+"layer": "",
+"o_ex_p": "",
+"o_folder": "res://img",
+"o_name": "",
+"only_visible": false,
+"op_exp": false,
+"source": "res://img/legs.aseprite"
+}
+}
 
 [node name="BloodOrigin" type="Position2D" parent="."]
 position = Vector2( 0, -11 )
@@ -2118,12 +2110,11 @@ show_behind_parent = true
 shape = SubResource( 25 )
 
 [node name="Hurtbox" parent="." groups=["PlayerHitbox"] instance=ExtResource( 11 )]
-visible = false
 collision_layer = 8
 collision_mask = 1574
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
-position = Vector2( 1, -16 )
+position = Vector2( 1, -17 )
 shape = SubResource( 42 )
 
 [node name="DashInterval" type="Timer" parent="."]
@@ -2135,7 +2126,7 @@ position = Vector2( 0, -37 )
 
 [node name="ShootSFX" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 13 )
-volume_db = -12.0
+volume_db = -18.0
 
 [node name="ReloadSFX" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 17 )
@@ -2189,7 +2180,6 @@ color = Color( 1, 1, 1, 1 )
 [connection signal="animation_finished" from="SecondaryAnimationPlayer" to="." method="_on_SecondaryAnimationPlayer_animation_finished"]
 [connection signal="animation_finished" from="BGAnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
 [connection signal="body_entered" from="Hurtbox" to="." method="_on_Hurtbox_body_entered"]
-[connection signal="timeout" from="DashInterval" to="." method="_on_DashInterval_timeout"]
 
 [editable path="Graphics/TorsoPivot/RotAxis/Hitbox"]
 [editable path="Hurtbox"]

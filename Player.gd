@@ -401,17 +401,20 @@ func play_animation_once(anim: String):
 	yield(sprite, "animation_finished")
 	can_change_state = true
 
+
 func take_damage(damage: float, from: Node2D = null, _type: String = "", knockback: Vector2 = Vector2.ZERO):
 	# Получаем в 3 раза больше урона, если достали сердце
 	if ejected_heart:
 		damage *= 3
 	
-	print(Global.invincible)
 	if Global.invincible or invincible:
 		return
 	
 	.take_damage(damage)
-	
+
+	# Turn invincible for a few seconds
+	turn_invincibility_on(2)
+
 	# TODO: should come from damage dealer
 	$HitSFX.play()
 	
@@ -476,8 +479,8 @@ func respawn():
 
 func _on_died():
 	._on_died()
-	print("DED!")
 	respawn()
+
 
 func get_cursor_position() -> Vector2:
 	return Global.get_crosshair().global_position
@@ -534,8 +537,11 @@ func stop_dashing():
 func is_invincible():
 	return Global.invincible or invincible
 
-func turn_invincibility_on():
+func turn_invincibility_on(sec: float = 0):
 	invincible = true
+	if sec != 0:
+		yield(get_tree().create_timer(sec), "timeout")
+		invincible = false
 
 
 func turn_invincibility_off():

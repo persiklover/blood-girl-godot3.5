@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/meat-slap.mp3-9f22e17d6328cc69e0639919bdf2b149.mp3str"
+
+[deps]
+
+source_file="res://sounds/meat-slap.mp3"
+dest_files=[ "res://.import/meat-slap.mp3-9f22e17d6328cc69e0639919bdf2b149.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

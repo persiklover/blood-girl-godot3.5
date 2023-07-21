@@ -308,9 +308,11 @@ visible = false
 
 [node name="ShootSFX" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 11 )
+volume_db = -16.0
 
 [node name="ReloadSFX" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 12 )
+volume_db = -6.0
 
 [connection signal="got_damage" from="Hitbox" to="." method="_on_Hitbox_got_damage"]
 [connection signal="area_entered" from="Vision" to="." method="_on_Vision_area_entered"]

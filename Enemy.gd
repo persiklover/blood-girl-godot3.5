@@ -23,7 +23,7 @@ var player_last_seen_position = null
 var _at_gunpoint = false
 var at_gunpoint  = false
 
-const SPEED = 57.5 # 82
+const SPEED = 46 # 82
 
 func _ready():
 	._ready()
@@ -369,8 +369,9 @@ func _on_AnimatedSprite_frame_changed():
 						(player.global_position - global_position).normalized() *
 						min(14, distance - 12)
 					)
-
 				10:
+					$WooshSFX.play()
+				12:
 					var distance = global_position.distance_to(player.global_position)
 					if distance <= 35:
 						var knockback = (player.blood_origin.global_position - blood_origin.global_position).normalized() * 180

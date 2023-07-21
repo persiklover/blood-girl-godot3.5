@@ -3,7 +3,7 @@ extends Node2D
 class_name Pathfinder
 
 onready var grid = $Grid
-onready var player = Global.get_player() as Player
+onready var player = Global.get_player()
 
 var START = Vector2(1, 1)
 var END   = Vector2(3, 1)
@@ -57,7 +57,6 @@ func find_path(from_position: Vector2, to_position: Vector2):
 			return path
 		
 		# Проходимся по всем соседним клеткам
-		var adjacent_nodes = []
 		for i in [-1, 0, 1]:
 			for j in [-1, 0, 1]:
 				# Не проверяем текущую клетку

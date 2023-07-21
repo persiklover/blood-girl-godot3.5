@@ -23,6 +23,9 @@ func _process(delta):
 
 
 func destroy():
+	hide()
+	$SFX.play()
+	yield($SFX, "finished")
 	queue_free()
 
 
@@ -34,4 +37,4 @@ func _on_Area2D_area_entered(area: Area2D):
 	
 	if active:
 		if area.is_in_group("EnemyHitbox"):
-			queue_free()
+			destroy()

@@ -9,7 +9,7 @@
 [ext_resource path="res://shaders/White.shader" type="Shader" id=7]
 
 [sub_resource type="CapsuleShape2D" id=4]
-radius = 5.00001
+radius = 4.00003
 height = 7.99998
 
 [sub_resource type="RectangleShape2D" id=1]

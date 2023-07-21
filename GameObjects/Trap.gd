@@ -4,8 +4,10 @@ func _on_Area2D_body_entered(body: Node2D):
 	if not is_instance_valid(body):
 		return
 	
-	if body.is_in_group("Bullet"):
-		return
+	var skip_groups = ["Bullet", "Arrow"]
+	for group in skip_groups:
+		if body.is_in_group(group):
+			return
 
 	if body.is_in_group("Player") and body.dashing:
 		return
@@ -16,6 +18,9 @@ func _on_Area2D_body_entered(body: Node2D):
 	
 	$AnimationPlayer.play("ACTIVATE")
 	yield($AnimationPlayer, "animation_finished")
+	
+	if not is_instance_valid(body):
+		return
 	
 	if body.is_in_group("Player") and Global.invincible:
 		return

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "ji3on8w6QJ+c7FS4Eb6rG8Qdsva90lvL4BzUNPkbFK5v5rVYSJtIJLuwGrJkEK3C41WjTu67TbP6bZeFkOqN/A==",
+  "success": true,
+  "projectFilePath": "C:\\Games\\geimu\\Blood Girl.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rttda\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\rttda\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.3\\microsoft.netframework.referenceassemblies.net472.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

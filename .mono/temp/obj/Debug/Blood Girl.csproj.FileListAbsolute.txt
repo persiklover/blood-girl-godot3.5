@@ -1,0 +1,9 @@
+C:\Games\geimu\.mono\temp\bin\Debug\Blood Girl.dll
+C:\Games\geimu\.mono\temp\bin\Debug\Blood Girl.pdb
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.csproj.AssemblyReference.cache
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.GeneratedMSBuildEditorConfig.editorconfig
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.AssemblyInfoInputs.cache
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.AssemblyInfo.cs
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.csproj.CoreCompileInputs.cache
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.dll
+C:\Games\geimu\.mono\temp\obj\Debug\Blood Girl.pdb

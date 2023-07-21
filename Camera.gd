@@ -15,7 +15,6 @@ func set_shake(value: bool):
 
 
 func _ready():
-	print("init camera")
 	player = get_parent()
 	randomize()
 

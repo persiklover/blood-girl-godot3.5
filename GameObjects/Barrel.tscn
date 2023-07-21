@@ -44,6 +44,7 @@ position = Vector2( 0, -4 )
 shape = SubResource( 3 )
 
 [node name="RayRect" parent="." instance=ExtResource( 2 )]
+visible = false
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_Area2D_area_entered"]
 [connection signal="body_entered" from="ExplosionArea" to="." method="_on_ExplosionArea_body_entered"]

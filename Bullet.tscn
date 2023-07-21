@@ -5,12 +5,12 @@
 [ext_resource path="res://GameObjects/Hitbox.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleShape2D" id=5]
-radius = 2.0
-height = 4.0
+radius = 4.00002
+height = 1.99996
 
 [sub_resource type="CapsuleShape2D" id=2]
-radius = 2.00001
-height = 3.99998
+radius = 4.00002
+height = 1.99996
 
 [node name="Bullet" type="KinematicBody2D" groups=["Bullet", "PlayerBullet"]]
 collision_layer = 1024
@@ -23,17 +23,27 @@ texture = ExtResource( 1 )
 offset = Vector2( 0.958333, 0.361008 )
 
 [node name="Collider" type="CollisionShape2D" parent="."]
+position = Vector2( -1, 0 )
 rotation = 1.57079
 shape = SubResource( 5 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1, 0 )
 collision_layer = 1540
 collision_mask = 512
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
+position = Vector2( -2, 0 )
 rotation = 1.57079
 shape = SubResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="Lifespan" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Lifespan" to="." method="_on_Lifespan_timeout"]
 
 [editable path="Hitbox"]

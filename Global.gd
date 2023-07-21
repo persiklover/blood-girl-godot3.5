@@ -12,8 +12,8 @@ onready var viewport : Viewport = get_viewport()
 
 var is_movement_disabled = false
 var is_using_controller  = false
-var pacifist_mode        = true
-var invincible           = true
+var pacifist_mode        = false
+var invincible           = false
 var invfinite_ammo       = false
 var invincible_enemies   = false
 var current_interactive_area : Area2D
@@ -36,9 +36,9 @@ func _ready():
 	
 	VisualServer.set_default_clear_color(Color("#222034"))
 	
-	camera.set_physics_process_internal(false)
-	yield(get_tree().create_timer(0.001), "timeout")
-	camera.set_physics_process_internal(true)
+	# camera.set_physics_process_internal(false)
+	# yield(get_tree().create_timer(0.001), "timeout")
+	# camera.set_physics_process_internal(true)
 
 func _process(_delta):
 	if is_instance_valid(camera) and is_instance_valid(player):
@@ -47,10 +47,12 @@ func _process(_delta):
 	if fps:
 		fps.content = str( Performance.get_monitor(Performance.TIME_FPS) )
 
+
 func _input(event):
 	if Input.is_action_just_pressed("fullscreen"):
 		OS.window_fullscreen = !OS.window_fullscreen
 		viewport.size = Vector2(WIDTH, HEIGHT)
+
 
 func get_player() -> Player:
 	if player:
@@ -58,32 +60,49 @@ func get_player() -> Player:
 		
 	return get_scene().find_node("Player") as Player
 
+
 func get_scene() -> Node:
 	return get_tree().current_scene
+
 
 func get_camera() -> Camera2D:
 	if camera:
 		return camera
 	
 	return get_scene().find_node("Camera2D") as Camera2D
-	
+
+
 func get_crosshair() -> Node2D:
 	var crosshair = get_scene().find_node("Crosshair")
 	return crosshair
 
+
+func get_cursor_position() -> Vector2:
+	return Global.get_crosshair().global_position
+
+
 func get_cutscene() -> AnimationPlayer:
 	return get_scene().find_node("Cutscenes") as AnimationPlayer
+
 
 func get_ysort() -> YSort:
 	return get_scene().find_node("YSort") as YSort
 
+
+# TODO: Remove
 func get_pathfinder() -> Pathfinder:
 	var pathfinder = get_scene().find_node("Pathfinder", true, false)
 	return pathfinder
 
+func get_astar():
+	var astar = get_scene().find_node("AStar", true, false)
+	return astar
+
+
 func get_grid() -> Grid:
 	var grid = get_scene().find_node("Grid")
 	return grid
+
 
 func load_scene(scene: PackedScene):
 	var world = Global.get_scene()
@@ -103,21 +122,24 @@ func load_scene(scene: PackedScene):
 
 
 func transition_to_scene(scene: PackedScene):
+	if not scene:
+		print("No scene provided!")
+		return
+
 	is_movement_disabled = true
 	pacifist_mode = true
 	invincible = true
 
 	var animation_player = Global.get_animation_player()
-	animation_player.play("SCENE_TRANSITION_IN")
-	yield(animation_player, "animation_finished")
+	# animation_player.play("SCENE_TRANSITION_IN")
+	# yield(animation_player, "animation_finished")
 	
 	Global.load_scene(scene)
 	
 	is_movement_disabled = false
 	invincible = false
 
-	animation_player.play("SCENE_TRANSITION_OUT")
-	yield(animation_player, "animation_finished")
+	# animation_player.play("SCENE_TRANSITION_OUT")
+	# yield(animation_player, "animation_finished")
 
-	# pacifist_mode = false
-
+	pacifist_mode = false

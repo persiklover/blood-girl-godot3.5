@@ -89,6 +89,7 @@ _global_script_class_icons={
 config/name="Blood Girl"
 run/main_scene="res://Project.tscn"
 run/delta_smoothing=false
+boot_splash/show_image=false
 config/icon="res://icon.png"
 
 [autoload]
@@ -97,18 +98,15 @@ Global="*res://Global.gd"
 
 [debug]
 
-settings/fps/force_fps=140
 shapes/collision/shape_color=Color( 1, 1, 1, 0.419608 )
 shapes/navigation/geometry_color=Color( 1, 1, 1, 0.4 )
 
 [display]
 
 window/size/resizable=false
-window/size/fullscreen=true
 window/size/test_width=1280
 window/size/test_height=720
 window/dpi/allow_hidpi=true
-window/energy_saving/keep_screen_on=false
 window/ios/hide_home_indicator=false
 window/stretch/mode="2d"
 
@@ -125,7 +123,7 @@ fps=true
 
 [gui]
 
-theme/custom_font="res://fonts/Hack/Better Hack.ttf"
+theme/use_hidpi=true
 
 [importer_defaults]
 
@@ -271,6 +269,10 @@ fullscreen={
 
 locale_filter=[ 1, [ "ru_RU" ] ]
 
+[mono]
+
+project/assembly_name="Blood Girl"
+
 [network]
 
 limits/debugger_stdout/max_messages_per_frame=20
@@ -278,20 +280,19 @@ limits/debugger_stdout/max_messages_per_frame=20
 [physics]
 
 common/enable_pause_aware_picking=true
-common/physics_interpolation=true
 
 [rendering]
 
 quality/driver/fallback_to_gles2=true
+2d/options/use_nvidia_rect_flicker_workaround=true
 quality/intended_usage/framebuffer_allocation=0
 quality/intended_usage/framebuffer_allocation.mobile=0
 2d/snapping/use_gpu_pixel_snap=true
 threads/thread_model=2
 quality/shadows/filter_mode=0
-quality/filters/anisotropic_filter_level=16
+quality/filters/anisotropic_filter_level=1
 quality/filters/use_nearest_mipmap_filter=true
-2d/options/use_software_skinning=false
-2d/opengl/batching_stream=2
+2d/options/ninepatch_mode=0
 quality/lightmapping/use_bicubic_sampling.mobile=true
 quality/subsurface_scattering/quality=2
 quality/subsurface_scattering/follow_surface=true

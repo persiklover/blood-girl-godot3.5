@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/open-lock.mp3-44b99afda2ca894dfce19bcc6a9c9417.mp3str"
+
+[deps]
+
+source_file="res://sounds/open-lock.mp3"
+dest_files=[ "res://.import/open-lock.mp3-44b99afda2ca894dfce19bcc6a9c9417.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

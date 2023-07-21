@@ -1,6 +1,6 @@
 extends Area2D
 
-export (String, FILE, "*.json") var dialogFile : String
+export (String, FILE, "*.json") var file_path : String
 
 var interactButtonScene = preload("res://InteractButton.tscn")
 
@@ -10,9 +10,9 @@ var json
 
 func _ready():
 	var file = File.new()
-	assert(file.file_exists(dialogFile), dialogFile + " does not exist")
+	assert(file.file_exists(file_path), file_path + " does not exist")
 
-	file.open(dialogFile, file.READ)
+	file.open(file_path, file.READ)
 	json = parse_json(file.get_as_text())
 	assert(json.size() > 0)
 

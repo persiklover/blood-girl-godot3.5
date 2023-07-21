@@ -1,7 +1,5 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://DialogTrigger.gd" type="Script" id=1]
-[ext_resource path="res://Teleport.gd" type="Script" id=2]
 [ext_resource path="res://img/plant.png" type="Texture" id=3]
 [ext_resource path="res://img/chair.png" type="Texture" id=4]
 [ext_resource path="res://img/room.png" type="Texture" id=5]
@@ -9,24 +7,18 @@
 [ext_resource path="res://img/light.png" type="Texture" id=7]
 [ext_resource path="res://img/laptop.png" type="Texture" id=8]
 [ext_resource path="res://img/table.png" type="Texture" id=9]
-[ext_resource path="res://img/door.png" type="Texture" id=10]
+[ext_resource path="res://GameObjects/Door.tscn" type="PackedScene" id=10]
 [ext_resource path="res://img/lamp.png" type="Texture" id=11]
 [ext_resource path="res://img/pictures.png" type="Texture" id=12]
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 11, 3.5 )
-
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 7.5, 7.5 )
-
-[sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 12.5, 13 )
 
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 20, 5.5 )
 
 [sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 10, 6.5 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 7.5, 7.5 )
 
 [node name="House" type="Node2D"]
 
@@ -57,19 +49,12 @@ texture_scale = 1.84
 color = Color( 1, 0.713726, 0.105882, 1 )
 energy = 0.46
 
-[node name="Door" type="Sprite" parent="."]
-position = Vector2( 0, -54 )
-texture = ExtResource( 10 )
+[node name="Door" parent="." instance=ExtResource( 10 )]
+position = Vector2( 0, -34 )
+path_to_scene = "res://Levels/Hub/Hub.tscn"
 
-[node name="Teleport" type="Position2D" parent="Door"]
-script = ExtResource( 2 )
-destination = NodePath("../../Arena/TPDestination")
-
-[node name="Trigger" type="Area2D" parent="Door/Teleport"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Door/Teleport/Trigger"]
-position = Vector2( 0, 18.5 )
-shape = SubResource( 1 )
+[node name="Shadow" parent="Door" index="1"]
+visible = false
 
 [node name="Carpet" type="Sprite" parent="."]
 position = Vector2( 40, -8 )
@@ -79,58 +64,49 @@ texture = ExtResource( 6 )
 position = Vector2( -27, -55 )
 texture = ExtResource( 12 )
 
-[node name="Chair" type="Sprite" parent="."]
-position = Vector2( -51, -24 )
-texture = ExtResource( 4 )
-offset = Vector2( 1, -1.594 )
+[node name="YSort" type="YSort" parent="."]
 
-[node name="Plant" type="Sprite" parent="Chair"]
-position = Vector2( 1, -5 )
-texture = ExtResource( 3 )
-offset = Vector2( 1.08, -11.716 )
-
-[node name="StaticBody2D" type="StaticBody2D" parent="Chair/Plant"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Chair/Plant/StaticBody2D"]
-position = Vector2( -0.5, 2.5 )
-shape = SubResource( 2 )
-
-[node name="DialogTrigger" type="Area2D" parent="Chair/Plant"]
-position = Vector2( 1, 0 )
-script = ExtResource( 1 )
-dialogFile = "res://dialogs/dialog.json"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Chair/Plant/DialogTrigger"]
-position = Vector2( 0.5, 4 )
-shape = SubResource( 3 )
-
-[node name="Table" type="Sprite" parent="."]
+[node name="Table" type="Sprite" parent="YSort"]
 position = Vector2( 37, 20 )
 texture = ExtResource( 9 )
 offset = Vector2( 0, -7.177 )
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Table"]
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/Table"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Table/StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/Table/StaticBody2D"]
 position = Vector2( 0, -1.5 )
 shape = SubResource( 4 )
 
-[node name="Laptop" type="Sprite" parent="."]
+[node name="Laptop" type="Sprite" parent="YSort"]
 position = Vector2( 40, -25 )
 texture = ExtResource( 8 )
 offset = Vector2( 0, -4.005 )
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Laptop"]
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/Laptop"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Laptop/StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/Laptop/StaticBody2D"]
 position = Vector2( 0, -0.5 )
 shape = SubResource( 5 )
+
+[node name="Chair" type="Sprite" parent="YSort"]
+position = Vector2( -51, -24 )
+texture = ExtResource( 4 )
+offset = Vector2( 1, -1.594 )
+
+[node name="Plant" type="Sprite" parent="YSort/Chair"]
+position = Vector2( 1, -5 )
+texture = ExtResource( 3 )
+offset = Vector2( 1.08, -11.716 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/Chair/Plant"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/Chair/Plant/StaticBody2D"]
+position = Vector2( -0.5, 2.5 )
+shape = SubResource( 2 )
 
 [node name="Respawn" type="Position2D" parent="."]
 __meta__ = {
 "_gizmo_extents_": 7.0
 }
 
-[connection signal="area_entered" from="Door/Teleport/Trigger" to="Door/Teleport" method="_on_Area2D_area_entered"]
-[connection signal="area_entered" from="Chair/Plant/DialogTrigger" to="Chair/Plant/DialogTrigger" method="_on_DialogTrigger_area_entered"]
-[connection signal="area_exited" from="Chair/Plant/DialogTrigger" to="Chair/Plant/DialogTrigger" method="_on_DialogTrigger_area_exited"]
+[editable path="Door"]

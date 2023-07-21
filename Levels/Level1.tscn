@@ -1,8 +1,6 @@
 [gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://img/tileset.png" type="Texture" id=1]
-[ext_resource path="res://Grid.gd" type="Script" id=2]
-[ext_resource path="res://Pathfinder.gd" type="Script" id=3]
 [ext_resource path="res://GameObjects/Grabbable/Rat/Rat.tscn" type="PackedScene" id=4]
 [ext_resource path="res://GameObjects/WalkingAreas/Wood/Wood.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Bonfire.tscn" type="PackedScene" id=6]
@@ -11,7 +9,7 @@
 [ext_resource path="res://GameObjects/Grabbable/Branch/Branch.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Tree.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Levels/Level.tscn" type="PackedScene" id=11]
-[ext_resource path="res://Levels/Shop.tscn" type="PackedScene" id=12]
+[ext_resource path="res://GameObjects/Spikes/Spikes.tscn" type="PackedScene" id=12]
 [ext_resource path="res://GameObjects/Trap.tscn" type="PackedScene" id=13]
 [ext_resource path="res://GameObjects/Grass/Grass.tscn" type="PackedScene" id=14]
 [ext_resource path="res://GameObjects/Lock.tscn" type="PackedScene" id=15]
@@ -19,7 +17,9 @@
 [ext_resource path="res://img/table.png" type="Texture" id=17]
 [ext_resource path="res://Effects/Cloud.tscn" type="PackedScene" id=18]
 [ext_resource path="res://GameObjects/Key.tscn" type="PackedScene" id=19]
-[ext_resource path="res://GameObjects/Enemies/Rat/Rat.tscn" type="PackedScene" id=20]
+[ext_resource path="res://GameObjects/Chest/Chest.tscn" type="PackedScene" id=20]
+[ext_resource path="res://Enemies/Archer/Archer.tscn" type="PackedScene" id=21]
+[ext_resource path="res://Components/AStar/AStar.tscn" type="PackedScene" id=22]
 
 [sub_resource type="ConvexPolygonShape2D" id=24]
 points = PoolVector2Array( 26, 26, 0, 26, 0, 0, 26, 0 )
@@ -269,22 +269,39 @@ position = Vector2( 260, -596 )
 rotation = 3.14159
 scale = Vector2( 2.5707, 1.13768 )
 
-[node name="Pathfinder" type="Node2D" parent="." index="3"]
-position = Vector2( 303, -1003 )
-script = ExtResource( 3 )
+[node name="AStar" parent="." index="3" instance=ExtResource( 22 )]
 
-[node name="Grid" type="Node2D" parent="Pathfinder" index="0"]
+[node name="Grid" parent="AStar" index="0"]
 visible = false
-modulate = Color( 1, 1, 1, 0.517647 )
-script = ExtResource( 2 )
+position = Vector2( 274, -803 )
+ROWS = 50
+COLS = 35
 
-[node name="Respawn" parent="." index="4"]
-position = Vector2( 447, -590 )
+[node name="Spikes" parent="." index="4" instance=ExtResource( 12 )]
+position = Vector2( 516, -604 )
+
+[node name="Spikes2" parent="." index="5" instance=ExtResource( 12 )]
+position = Vector2( 516, -620 )
+
+[node name="Spikes3" parent="." index="6" instance=ExtResource( 12 )]
+position = Vector2( 516, -588 )
+
+[node name="Spikes4" parent="." index="7" instance=ExtResource( 12 )]
+position = Vector2( 573, -604 )
+
+[node name="Spikes5" parent="." index="8" instance=ExtResource( 12 )]
+position = Vector2( 573, -620 )
+
+[node name="Spikes6" parent="." index="9" instance=ExtResource( 12 )]
+position = Vector2( 573, -588 )
+
+[node name="Respawn" parent="." index="10"]
+position = Vector2( 445, -603 )
 
 [node name="EncounterArea" parent="YSort" index="0" instance=ExtResource( 16 )]
 position = Vector2( 562, -625 )
 disabled = true
-waves = 2
+waves = 1
 
 [node name="CollisionShape" parent="YSort/EncounterArea" index="0"]
 visible = false
@@ -308,29 +325,46 @@ position = Vector2( 195, -751 )
 
 [node name="Tree" parent="YSort" index="3" instance=ExtResource( 10 )]
 position = Vector2( 181, -812 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Tree2" parent="YSort" index="4" instance=ExtResource( 10 )]
 position = Vector2( 333, -699 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Tree3" parent="YSort" index="5" instance=ExtResource( 10 )]
 position = Vector2( 336, -419 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Tree6" parent="YSort" index="6" instance=ExtResource( 10 )]
 position = Vector2( 584, -507 )
 
 [node name="Tree9" parent="YSort" index="7" instance=ExtResource( 10 )]
 position = Vector2( 832, -504 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Tree8" parent="YSort" index="8" instance=ExtResource( 10 )]
-position = Vector2( 650, -774 )
+position = Vector2( 679, -774 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Tree7" parent="YSort" index="9" instance=ExtResource( 10 )]
 position = Vector2( 1099, -860 )
+__meta__ = {
+"_editor_description_": "YXNlcHJpdGVfd2l6YXJkX2NvbmZpZwpwbGF5ZXJ8PQpzb3VyY2V8PQpsYXllcnw9Cm9wX2V4cHw9RmFsc2UKb19mb2xkZXJ8PQpvX25hbWV8PQpvbmx5X3Zpc2libGV8PUZhbHNlCm9fZXhfcHw9Cg=="
+}
 
 [node name="Door" parent="YSort" index="10" instance=ExtResource( 8 )]
 position = Vector2( 573, -765 )
 disabled = true
-scene = ExtResource( 12 )
 
 [node name="Lock" parent="YSort/Door" index="3" instance=ExtResource( 15 )]
 position = Vector2( 0, -11 )
@@ -364,11 +398,15 @@ position = Vector2( 413, -571 )
 position = Vector2( 568, -503 )
 
 [node name="Key" parent="YSort" index="20" instance=ExtResource( 19 )]
-position = Vector2( 518, -707 )
+position = Vector2( 573, -693 )
 
-[node name="Rat2" parent="YSort" index="21" instance=ExtResource( 20 )]
-position = Vector2( 544, -648 )
+[node name="Chest" parent="YSort" index="21" instance=ExtResource( 20 )]
+position = Vector2( 545, -601 )
+
+[node name="Archer" parent="YSort" index="22" instance=ExtResource( 21 )]
+position = Vector2( 574, -609 )
 
 [connection signal="unlocked" from="YSort/Door/Lock" to="YSort/Door" method="_on_Lock_unlocked"]
 
+[editable path="AStar"]
 [editable path="YSort/EncounterArea"]

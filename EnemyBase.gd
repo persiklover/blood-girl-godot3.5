@@ -119,7 +119,7 @@ func _on_died():
 func take_damage(damage: float):
 	.take_damage(damage)
 
-	if false:
+	if true:
 		var indicator = load("res://GameObjects/UI/DamageIndicator/DamageIndicator.tscn").instance()
 		var blood_origin = find_node("BloodOrigin")
 		if not blood_origin:

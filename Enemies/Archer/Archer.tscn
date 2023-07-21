@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://aseprite-wizard-output/archer.res" type="SpriteFrames" id=1]
+[ext_resource path="res://img/shadow.png" type="Texture" id=2]
+[ext_resource path="res://Components/Health/Health.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Components/Hitbox/Hitbox.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Enemies/Archer/Archer.gd" type="Script" id=5]
+[ext_resource path="res://Components/Pathfinder/Pathfinder.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Components/Flippable/Flippable.tscn" type="PackedScene" id=7]
+[ext_resource path="res://sounds/punch.wav" type="AudioStream" id=8]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 2.00002
+height = 3.99996
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 5.0
+height = 8.0
+
+[sub_resource type="RectangleShape2D" id=3]
+resource_local_to_scene = true
+extents = Vector2( 20, 10 )
+
+[node name="Archer" type="KinematicBody2D" groups=["Enemy"]]
+collision_layer = 4
+collision_mask = 519
+script = ExtResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 1, -1 )
+rotation = 1.57079
+shape = SubResource( 1 )
+
+[node name="Flippable" parent="." instance=ExtResource( 7 )]
+origin = Vector2( 1, 0 )
+
+[node name="Shadow" type="Sprite" parent="Flippable"]
+position = Vector2( 1, 0 )
+texture = ExtResource( 2 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Flippable"]
+frames = ExtResource( 1 )
+offset = Vector2( 1, -12 )
+
+[node name="BulletOrigin" type="Position2D" parent="Flippable"]
+position = Vector2( -13, -11 )
+
+[node name="Health" parent="." instance=ExtResource( 3 )]
+max_health = 6
+
+[node name="HealthBar" parent="Health" index="0"]
+position = Vector2( 0, -24 )
+
+[node name="Hitbox" parent="." instance=ExtResource( 4 )]
+visible = false
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+position = Vector2( 1, -13 )
+shape = SubResource( 2 )
+
+[node name="Pathfinder" parent="." instance=ExtResource( 6 )]
+
+[node name="Line2D" parent="Pathfinder" index="0"]
+visible = false
+
+[node name="CollisionShape2D" parent="Pathfinder/RayRect" index="0"]
+shape = SubResource( 3 )
+
+[node name="AttackTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="HitSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
+volume_db = -12.0
+
+[connection signal="died" from="Health" to="." method="_on_died"]
+[connection signal="got_damage" from="Hitbox" to="." method="_on_got_damage"]
+[connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
+
+[editable path="Flippable"]
+[editable path="Health"]
+[editable path="Hitbox"]
+[editable path="Pathfinder"]
+[editable path="Pathfinder/RayRect"]
