@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/heart.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
 [ext_resource path="res://InteractiveArea.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Heart.gd" type="Script" id=4]
+[ext_resource path="res://img/interact-button.png" type="Texture" id=5]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 2.00001
@@ -22,10 +23,15 @@ shape = SubResource( 1 )
 disabled = true
 
 [node name="InteractiveArea" parent="." instance=ExtResource( 3 )]
+modulate = Color( 1, 1, 1, 1 )
 
 [node name="CollisionShape2D" parent="InteractiveArea" index="0"]
 position = Vector2( 0, -2 )
 shape = SubResource( 2 )
+
+[node name="Interact-button" type="Sprite" parent="InteractiveArea/Tooltip" index="0"]
+position = Vector2( 0, -31 )
+texture = ExtResource( 5 )
 
 [node name="Shadow" type="Sprite" parent="."]
 scale = Vector2( 0.818182, 1 )
@@ -33,7 +39,7 @@ texture = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
-frame = 4
+frame = 3
 playing = true
 offset = Vector2( 0, -5 )
 

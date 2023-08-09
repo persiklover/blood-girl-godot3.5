@@ -47,6 +47,7 @@ extents = Vector2( 60.375, 14.3125 )
 
 [sub_resource type="Animation" id=49]
 resource_name = "RELOAD"
+step = 0.025
 tracks/0/type = "value"
 tracks/0/path = NodePath("../../../ReloadSFX:playing")
 tracks/0/interp = 1
@@ -66,10 +67,10 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.9, 0.975, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0.0, 2160.0 ]
+"values": [ 0.0, 3600.0, 3650.0, 3600.0 ]
 }
 
 [sub_resource type="Animation" id=31]
@@ -224,7 +225,7 @@ tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray( 0.1, 0.5 ),
+"times": PoolRealArray( 0, 0.5 ),
 "transitions": PoolRealArray( 1, 1 ),
 "values": [ {
 "args": [  ],
@@ -283,6 +284,30 @@ tracks/9/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ true ]
+}
+tracks/10/type = "value"
+tracks/10/path = NodePath("Shadow:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 0.05, 0.4, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ Vector2( 1.23967, 1 ), Vector2( 0.909091, 0.8125 ), Vector2( 0.909091, 0.8125 ), Vector2( 1.23967, 1 ) ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Shadow:position")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 0.05, 0.4, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 0 ), Vector2( 1, 1 ), Vector2( 1, 1 ), Vector2( 1, 0 ) ]
 }
 
 [sub_resource type="Animation" id=21]
@@ -561,6 +586,30 @@ tracks/22/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 0,
 "values": [ 517 ]
+}
+tracks/23/type = "value"
+tracks/23/path = NodePath("Shadow:scale")
+tracks/23/interp = 1
+tracks/23/loop_wrap = true
+tracks/23/imported = false
+tracks/23/enabled = true
+tracks/23/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1.23967, 1 ) ]
+}
+tracks/24/type = "value"
+tracks/24/path = NodePath("Shadow:position")
+tracks/24/interp = 1
+tracks/24/loop_wrap = true
+tracks/24/imported = false
+tracks/24/enabled = true
+tracks/24/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 0 ) ]
 }
 
 [sub_resource type="Animation" id=50]
@@ -1862,24 +1911,12 @@ tracks/21/keys = {
 "values": [ false ]
 }
 tracks/22/type = "value"
-tracks/22/path = NodePath("Graphics:position")
+tracks/22/path = NodePath("Graphics:rotation_degrees")
 tracks/22/interp = 1
 tracks/22/loop_wrap = true
 tracks/22/imported = false
 tracks/22/enabled = true
 tracks/22/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ) ]
-}
-tracks/23/type = "value"
-tracks/23/path = NodePath("Graphics:rotation_degrees")
-tracks/23/interp = 1
-tracks/23/loop_wrap = true
-tracks/23/imported = false
-tracks/23/enabled = true
-tracks/23/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
@@ -1907,7 +1944,7 @@ collision_layer = 2
 collision_mask = 517
 script = ExtResource( 4 )
 max_health = 5
-health_drop = 0.001
+health_drop = 0.02
 
 [node name="Camera2D" type="Camera2D" parent="."]
 z_index = 4096
@@ -1947,11 +1984,13 @@ wait_time = 0.298
 one_shot = true
 
 [node name="Collider" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2( 0.5, -0.5 )
 rotation = 1.57079
 shape = SubResource( 5 )
 
 [node name="Trigger" type="Area2D" parent="."]
+visible = false
 modulate = Color( 0.623529, 0.027451, 0.670588, 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Trigger"]
@@ -1960,7 +1999,7 @@ rotation = 1.57079
 shape = SubResource( 51 )
 
 [node name="Shadow" type="Sprite" parent="."]
-position = Vector2( 0.801654, 0 )
+position = Vector2( 1, 0 )
 scale = Vector2( 1.23967, 1 )
 texture = ExtResource( 1 )
 
@@ -1975,6 +2014,7 @@ offset = Vector2( 1, -28 )
 
 [node name="TorsoPivot" type="Node2D" parent="Graphics"]
 use_parent_material = true
+position = Vector2( 1, -2 )
 
 [node name="RotAxis" type="Node2D" parent="Graphics/TorsoPivot"]
 use_parent_material = true
@@ -1983,7 +2023,6 @@ position = Vector2( -4, -13 )
 [node name="Hitbox" parent="Graphics/TorsoPivot/RotAxis" groups=["PlayerHand"] instance=ExtResource( 5 )]
 visible = false
 material = SubResource( 19 )
-position = Vector2( -1, 14 )
 collision_layer = 2
 collision_mask = 12
 
@@ -2110,6 +2149,7 @@ show_behind_parent = true
 shape = SubResource( 25 )
 
 [node name="Hurtbox" parent="." groups=["PlayerHitbox"] instance=ExtResource( 11 )]
+visible = false
 collision_layer = 8
 collision_mask = 1574
 

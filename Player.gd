@@ -24,7 +24,7 @@ var min_speed = 65 # 94
 var max_speed = 85
 var speed = 0
 
-export(float) var health_drop = 0.0022
+export(float) var health_drop = 0.2
 
 enum State { IDLE, RUN, EAT, PUNCH, KICK, DASH }
 var currentState = State.IDLE
@@ -502,7 +502,6 @@ func eat(object : Node2D):
 	object_to_interact = object
 	
 	eating = true
-	Global.is_movement_disabled = true
 	facing_right = object.global_position.x > global_position.x;
 
 	object.global_position = Vector2(global_position.x, global_position.y + 1)
@@ -602,7 +601,7 @@ func _on_Timer_timeout():
 	if Global.invincible:
 		return
 	
-	# health -= health_drop
+	self.health -= health_drop
 
 
 # Кто-то пiпався в хитбокс левой руки

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://aseprite-wizard-output/archer.res" type="SpriteFrames" id=1]
 [ext_resource path="res://img/shadow.png" type="Texture" id=2]
@@ -8,6 +8,8 @@
 [ext_resource path="res://Components/Pathfinder/Pathfinder.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Components/Flippable/Flippable.tscn" type="PackedScene" id=7]
 [ext_resource path="res://sounds/punch.wav" type="AudioStream" id=8]
+[ext_resource path="res://Components/Spawner/Spawner.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Heart.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 2.00002
@@ -46,7 +48,7 @@ offset = Vector2( 1, -12 )
 position = Vector2( -13, -11 )
 
 [node name="Health" parent="." instance=ExtResource( 3 )]
-max_health = 6
+max_health = 3
 
 [node name="HealthBar" parent="Health" index="0"]
 position = Vector2( 0, -24 )
@@ -65,6 +67,9 @@ visible = false
 
 [node name="CollisionShape2D" parent="Pathfinder/RayRect" index="0"]
 shape = SubResource( 3 )
+
+[node name="HeartSpawner" parent="." instance=ExtResource( 9 )]
+scene = ExtResource( 10 )
 
 [node name="AttackTimer" type="Timer" parent="."]
 wait_time = 2.0

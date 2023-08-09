@@ -22,6 +22,7 @@ func _on_area_entered(area: Area2D):
 
 	elif object.is_in_group("PlayerBullet"):
 		var bullet = object
+		bullet.hit_number += 1
 		emit_signal("got_damage", calculate_damage(bullet.damage), bullet, "bullet")
 
 	elif object.is_in_group("Spikes"):

@@ -6,29 +6,26 @@ onready var health = $Health
 onready var graphics = $Flippable
 onready var bullet_origin = $Flippable/BulletOrigin
 onready var pathfinder = $Pathfinder
+onready var heart_spawner = $HeartSpawner
 
 onready var player = Global.get_player()
 
 export (int) var attack_distance = 165
 
 func _process(_delta: float):
-	var destination = player.global_position + (global_position - player.global_position).normalized() * attack_distance
-	pathfinder.destination = destination
+	if Global.pacifist_mode:
+		return
+	
+	var distance_to_player = global_position.distance_to(player.global_position)
+	if distance_to_player > attack_distance:
+		var destination = player.global_position + (global_position - player.global_position).normalized() * attack_distance
+		pathfinder.destination = destination
+
 	if pathfinder.direction:
 		graphics.v_flip = pathfinder.direction.x >= 0
 
 
-func _on_got_damage(damage, _from, type):
-	health.take_damage(damage)
-	if type == "bullet":
-		$HitSFX.play()
-
-
-func _on_died():
-	queue_free()
-
-
-func _on_AttackTimer_timeout():
+func attack():
 	if randf() < .3:
 		for t in [-1, 0, 1]:
 			var arrow = arrow_scene.instance()
@@ -58,3 +55,21 @@ func _on_AttackTimer_timeout():
 			arrow.rotation_degrees += 180
 			get_parent().call_deferred("add_child", arrow)
 			yield(get_tree().create_timer(.3), "timeout")
+
+
+func _on_got_damage(damage, _from, type):
+	health.take_damage(damage)
+	if type == "bullet":
+		$HitSFX.play()
+
+
+func _on_died():
+	heart_spawner.spawn()
+	queue_free()
+
+
+func _on_AttackTimer_timeout():
+	if Global.pacifist_mode:
+		return
+	
+	attack()

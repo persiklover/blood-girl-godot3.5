@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="ParticlesMaterial" id=1]
+emission_shape = 2
+emission_box_extents = Vector3( 1, 100, 1 )
+flag_disable_z = true
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 58.33
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 34.33
+
+[node name="Clouds" type="Particles2D"]
+amount = 3
+lifetime = 4.0
+process_material = SubResource( 1 )

@@ -15,5 +15,4 @@ func _on_Timer_timeout():
 
 
 func _on_DamageBox_triggered():
-	print("!")
 	queue_free()
